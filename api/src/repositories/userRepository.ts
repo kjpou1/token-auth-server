@@ -3,14 +3,18 @@ import { Collection } from "../utils/deps.ts";
 import { UserSchema } from "../schemas/schemas.ts";
 
 export class UserRepository extends Repository {
+  private static collection: Collection<UserSchema>;
   get collectionName(): string {
     return "users";
   }
   repositoryCollection(): Collection<UserSchema> {
-    const db = this.dataBase;
-    if (db === undefined) {
-      throw new Error("Problem initializing database");
+    if (!UserRepository.collection) {
+      UserRepository.collection = this.dataBase.getDatabase.collection<
+        UserSchema
+      >(
+        this.collectionName,
+      );
     }
-    return db.collection<UserSchema>(this.collectionName);
+    return UserRepository.collection;
   }
 }

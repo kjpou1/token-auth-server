@@ -1,6 +1,5 @@
-import { Bson, Collection, Database, MongoClient } from "../utils/deps.ts";
-//import * as database from "../database/db.ts";
-import { db } from "../database/connection.ts";
+import { Bson, Collection } from "../utils/deps.ts";
+import MongoDatabase from "../database/mongoDatabase.ts";
 import { Pagination } from "../types/filterandpagination/FilterAndPaginationTypes.ts";
 
 export abstract class Repository {
@@ -9,18 +8,17 @@ export abstract class Repository {
   abstract repositoryCollection(): Collection<any>;
 
   // private static variables
-  private static _dataBase = {} as Database;
-  private static _mongoClient: MongoClient;
+  private static _dataBase = {} as MongoDatabase;
 
   constructor() {
-    this.dataBase = db;
+    this.dataBase = MongoDatabase.getInstance();
   }
 
   // properties
-  get dataBase(): Database {
+  get dataBase(): MongoDatabase {
     return Repository._dataBase;
   }
-  set dataBase(db: Database) {
+  set dataBase(db: MongoDatabase) {
     Repository._dataBase = db;
   }
 
