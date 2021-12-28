@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  api:
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+    container_name: token-auth-server
+    volumes:
+      - ./api/src:/home/api/src
+    depends_on:
+      - api_mongo
+    environment:
+      - URI=http://0.0.0.0:3001
+      - MONGO_URL=mongodb://api_mongo:27017
+      - DB_NAME=token-auth-server
+      - API_VERSION=v1
+    ports:
+      - "3001:3001"
+
+  api_mongo:
+   image: mongo:latest
+   container_name: api_mongo
+   volumes:
+     - mongodb_api:/data/db
+   ports:
+     - '27017:27017'
+
+volumes:
+  mongodb_api:
