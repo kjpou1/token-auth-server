@@ -167,5 +167,20 @@ https://github.com/Octo8080/deno-csrf
 ## Running from dockerfile
 
 ```
+cd api
 docker build -t token-auth-server . && docker run -it --init -p 3001:3001 -e MONGO_URL=ngodb://192.168.178.223:27017 token-auth-server
+```
+
+## Docker compose commands
+
+Rebuild
+
+```
+docker-compose down && docker-compose build
+```
+
+Start the compose containers
+
+```
+docker-compose up
 ```
