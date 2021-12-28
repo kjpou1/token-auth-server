@@ -6,7 +6,7 @@ import * as middlewares from "./middlewares/middlewares.ts";
 ensureEnvironment();
 
 const app = new Application();
-const LOCATION = new URL(Deno.env.get("URI") || "http://localhost:8001");
+const LOCATION = new URL(Deno.env.get("URI") || "http://localhost:3001");
 const HOST_NAME = LOCATION.hostname;
 const PORT = +LOCATION.port;
 
@@ -28,9 +28,9 @@ app.addEventListener("error", (event) => {
 });
 
 app.addEventListener("listen", ({ hostname, port, secure }) => {
-  if (!hostname || hostname === "0.0.0.0") {
-    hostname = "localhost";
-  }
+  // if (!hostname || hostname === "0.0.0.0" || "::1") {
+  //   hostname = "localhost";
+  // }
   const location = {
     href: `${secure ? "https://" : "http://"}${hostname}:${port}`,
     hostname: hostname,
@@ -53,13 +53,6 @@ app.use(
   }),
 );
 
-// app.use(async (ctx, next) => {
-//   ctx.response.headers.set('Access-Control-Allow-Origin', '*');
-//   ctx.response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-//   ctx.response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-//   await next();
-// })
-
 app.use(middlewares.errorMiddleware);
 app.use(middlewares.loggerMiddleware);
 app.use(middlewares.timingMiddleware);
@@ -72,6 +65,7 @@ app.use(middlewares.notFoundMiddleware);
 if (import.meta.main) {
   log.info(`Starting CORS-enabled server on ${PORT}....`);
   await app.listen({
+    hostname: HOST_NAME,
     port: PORT,
   });
 }

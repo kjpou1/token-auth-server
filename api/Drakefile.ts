@@ -36,14 +36,14 @@ task("help", [], function () {
 desc("Run API");
 task("start", [], async function () {
   await sh(
-    "PORT=8000 deno run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json src/mod.ts",
+    "deno run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json src/mod.ts",
   );
 });
 
 desc("Run API via denon for development");
 task("denon", [], async function () {
   await sh(
-    "PORT=8000 denon run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json src/mod.ts",
+    "denon run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json src/mod.ts",
   );
 });
 
