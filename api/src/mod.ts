@@ -10,6 +10,15 @@ const LOCATION = new URL(Deno.env.get("URI") || "http://localhost:3001");
 const HOST_NAME = LOCATION.hostname;
 const PORT = +LOCATION.port;
 
+const controller = new AbortController();
+const { signal } = controller;
+
+const startGracefulShutdown = () => {
+  log.info("Starting shutdown of server...");
+  controller.abort();
+};
+
+Deno.addSignalListener("SIGINT", startGracefulShutdown);
 
 await log.setup({
   handlers: {
@@ -67,5 +76,8 @@ if (import.meta.main) {
   await app.listen({
     hostname: HOST_NAME,
     port: PORT,
+    signal,
   });
+  log.info(`Server shut down....`);
+  Deno.exit(0);
 }
