@@ -10,15 +10,18 @@ class MongoDatabase {
   private MONGO_URL: string;
   private DB_NAME: string;
   constructor() {
-    log.debug("Connecting to mongo");
-    this.MONGO_URL = config.MONGODB_URI || "mongodb://localhost:27017";
-    this.DB_NAME = config.MONGODB_DATABASE_NAME || "token_auth_server";
+    // First check for environment override parameters
+    this.MONGO_URL = Deno.env.get("MONGO_URL") || config.MONGODB_URI;
+    this.DB_NAME = Deno.env.get("DB_NAME") || config.MONGODB_DATABASE_NAME;
     this.client = {} as MongoClient;
   }
 
   connect() {
+    log.info(
+      `Connecting to mongodb at ${this.MONGO_URL} db: ${this.DB_NAME} --`,
+    );
     const mongoClient = new MongoClient();
-    mongoClient.connect(config.MONGODB_URI as string);
+    mongoClient.connect(this.MONGO_URL as string);
     this.client = mongoClient;
   }
 
