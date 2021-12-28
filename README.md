@@ -163,3 +163,9 @@ clients](https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/#silent
 https://deno.land/x/drash_middleware@v0.7.10/csrf
 https://en.wikipedia.org/wiki/Cross-site_request_forgery
 https://github.com/Octo8080/deno-csrf
+
+## Running from dockerfile
+
+```
+docker build -t token-auth-server . && docker run -it --init -p 3001:3001 -e MONGO_URL=ngodb://192.168.178.223:27017 token-auth-server
+```
