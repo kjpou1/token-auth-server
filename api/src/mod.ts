@@ -6,7 +6,10 @@ import * as middlewares from "./middlewares/middlewares.ts";
 ensureEnvironment();
 
 const app = new Application();
-const PORT = 8000;
+const LOCATION = new URL(Deno.env.get("URI") || "http://localhost:8001");
+const HOST_NAME = LOCATION.hostname;
+const PORT = +LOCATION.port;
+
 
 await log.setup({
   handlers: {
