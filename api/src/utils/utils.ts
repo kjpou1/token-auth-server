@@ -1,4 +1,4 @@
-import { dotenv, join, omit } from "./deps.ts";
+import { dotenv, join, log, omit } from "./deps.ts";
 import { ResponseUser, UserRole } from "../types/user/userTypes.ts";
 import { UserSchema } from "../schemas/schemas.ts";
 
@@ -6,6 +6,23 @@ export async function getBannerText() {
   const path = join("data", "banner.txt");
   const result = await Deno.readTextFile(path);
   return result;
+}
+
+function ensureSecretKeyFileExists() {
+  try {
+    const fileInfo = Deno.statSync(
+      Deno.env.get("JWT_SECRET_FILE") ?? "./DEADBEEF",
+    );
+    if (!fileInfo.isFile) {
+      log.critical(
+        "Internal Server Error: Crypto Key file not found.  Please generate a file and retry.",
+      );
+    }
+  } catch {
+    log.critical(
+      "Internal Server Error: Crypto Key file not found.  Please generate a file and retry.",
+    );
+  }
 }
 
 export function ensureEnvironment() {
@@ -46,6 +63,8 @@ export function ensureEnvironment() {
       }`,
     );
   }
+
+  ensureSecretKeyFileExists();
 }
 
 export function createResponseUser(user: UserSchema) {

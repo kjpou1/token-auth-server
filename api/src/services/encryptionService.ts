@@ -1,4 +1,4 @@
-import { bcrypt } from "../utils/deps.ts";
+import { bcrypt, djwt, log } from "../utils/deps.ts";
 import { config } from "../config/config.ts";
 const { JWT_SECRET_FILE } = config;
 
@@ -17,8 +17,35 @@ export class EncryptionService {
     return await bcrypt.compare(password, hash);
   }
 
+  private static pubKeyFileVerified: boolean;
+  private static pubKeyBytes: Uint8Array = new Uint8Array();
+
+  private static getPublicKeyEncoder(): Uint8Array {
+    if (!this.pubKeyFileVerified) {
+      this.pubKeyFileVerified = true;
+      const statInfo = Deno.statSync(JWT_SECRET_FILE);
+      if (statInfo.isFile) {
+        const secretSauce = Deno.readTextFileSync(JWT_SECRET_FILE);
+        this.pubKeyBytes = new TextEncoder().encode(secretSauce);
+      }
+    }
+
+    if (this.pubKeyBytes.byteLength === 0) {
+      throw new Error(
+        "Internal Server Error: Crypto Key file not found.  Please generate a file and retry.",
+      );
+    }
+    return this.pubKeyBytes;
+  }
+
   static get keyHS512() {
-    return keyHS512;
+    return crypto.subtle.importKey(
+      "raw",
+      this.getPublicKeyEncoder(),
+      { name: "HMAC", hash: "SHA-512" },
+      false,
+      ["sign", "verify"],
+    ) as Promise<CryptoKey>;
   }
 
   /**
@@ -49,11 +76,3 @@ export class EncryptionService {
     return string;
   }
 }
-
-const keyHS512 = await crypto.subtle.importKey(
-  "raw",
-  new TextEncoder().encode(await Deno.readTextFile(JWT_SECRET_FILE)),
-  { name: "HMAC", hash: "SHA-512" },
-  false,
-  ["sign", "verify"],
-);

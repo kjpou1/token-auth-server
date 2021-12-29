@@ -22,7 +22,7 @@ export class TokenService {
     try {
       const payload = await djwt.verify(
         token,
-        EncryptionService.keyHS512,
+        await EncryptionService.keyHS512,
       );
       return payload;
     } catch (err) {
@@ -49,7 +49,7 @@ export class TokenService {
     const accessToken = await djwt.create(
       { alg: "HS512", typ: "JWT" },
       payload,
-      EncryptionService.keyHS512,
+      await EncryptionService.keyHS512,
     );
     return accessToken;
   }
@@ -76,7 +76,7 @@ export class TokenService {
     const refreshToken = await djwt.create(
       { alg: "HS512", typ: "JWT" },
       refreshPayload,
-      EncryptionService.keyHS512,
+      await EncryptionService.keyHS512,
     );
     const expd = new Date();
     expd.setTime(expd.getTime() + Number(config.JWT_REFRESH_TOKEN_EXP) * 1000);
@@ -104,7 +104,7 @@ export class TokenService {
     const refreshToken = await djwt.create(
       { alg: "HS512", typ: "JWT" },
       refreshPayload,
-      EncryptionService.keyHS512,
+      await EncryptionService.keyHS512,
     );
 
     log.debug("Rotating refresh token");
