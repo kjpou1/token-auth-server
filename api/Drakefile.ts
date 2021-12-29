@@ -1,10 +1,5 @@
-import {
-  desc,
-  run,
-  sh,
-  shCapture,
-  task,
-} from "https://deno.land/x/drake@v1.5.0/mod.ts";
+import { desc, run, sh, task } from "https://deno.land/x/drake@v1.5.0/mod.ts";
+import { jwtSecretGen } from "./src/utils/jwtSecretGen.ts";
 
 desc("Help");
 task("help", [], function () {
@@ -91,8 +86,7 @@ task("mongodb-install", [], async function () {
 
 desc("Generate secret key");
 task("gen-secret", [], async function () {
-  const { output } = await shCapture("openssl rand 256 | base64");
-  console.log(`JWT_SECRET=${output}`);
+  await jwtSecretGen();
 });
 
 run();

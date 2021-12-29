@@ -19,9 +19,9 @@ export function ensureEnvironment() {
     missingEnvVars.push("MONGODB_URI");
   }
 
-  // Double check that the the "JWT_SECRET" is defined
-  if (typeof Deno.env.get("JWT_SECRET") !== "string") {
-    missingEnvVars.push("JWT_SECRET");
+  // Double check that the the "JWT_SECRET_FILE" is defined
+  if (typeof Deno.env.get("JWT_SECRET_FILE") !== "string") {
+    missingEnvVars.push("JWT_SECRET_FILE");
   }
 
   // Double check that the the "JWT_ACCESS_TOKEN_EXP" is defined

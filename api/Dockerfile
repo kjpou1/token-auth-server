@@ -19,6 +19,9 @@ ADD . .
 # Compile the mods app so that it doesn't need to be compiled each startup/entry.
 RUN deno cache --import-map=import_map.json --unstable src/mod.ts
 
+# Generate JWT key used for signing and verifying
+RUN deno run -A --unstable src/utils/jwtSecretGen.ts
+
 CMD ["run", "--allow-net", "--allow-env", "--allow-read","--unstable", "--import-map=import_map.json", "src/mod.ts"]
 
 # The port that the auth server application listens to.

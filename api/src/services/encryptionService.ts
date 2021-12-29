@@ -1,6 +1,6 @@
 import { bcrypt } from "../utils/deps.ts";
 import { config } from "../config/config.ts";
-const { JWT_SECRET } = config;
+const { JWT_SECRET_FILE } = config;
 
 export class EncryptionService {
   /**
@@ -52,7 +52,7 @@ export class EncryptionService {
 
 const keyHS512 = await crypto.subtle.importKey(
   "raw",
-  new TextEncoder().encode(JWT_SECRET),
+  new TextEncoder().encode(await Deno.readTextFile(JWT_SECRET_FILE)),
   { name: "HMAC", hash: "SHA-512" },
   false,
   ["sign", "verify"],

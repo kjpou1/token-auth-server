@@ -126,3 +126,4 @@ dist
 !.vscode/*.code-snippets
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode
+id_hmac_pub.key
