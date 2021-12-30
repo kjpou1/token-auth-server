@@ -8,12 +8,12 @@ export async function jwtSecretGen() {
     ["sign", "verify"],
   );
   const jasonWebKey = await crypto.subtle.exportKey("jwk", key);
-
   if (jasonWebKey.k) {
     await Deno.writeTextFile("./id_hmac_pub.key", jasonWebKey.k);
     console.log("Keyfile was generated");
-    return;
+    Deno.exit(0);
   }
 
-  throw new Error("Keyfile was not generated.");
+  console.log("Error generating keyfile");
+  Deno.exit(-1);
 }
