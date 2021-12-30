@@ -11,7 +11,6 @@
     "CORS": "https://deno.land/x/cors@v1.2.2/mod.ts",
     "bcrypt": "https://deno.land/x/bcrypt@v0.2.4/mod.ts",
     "validasaur": "https://deno.land/x/validasaur@v0.15.0/mod.ts",
-    "password_checker": "https://deno.land/x/password_checker@v1.0.0/mod.ts",
-    "schemas": "./schemas/schemas.ts"
+    "password_checker": "https://deno.land/x/password_checker@v1.0.0/mod.ts"
   }
 }
