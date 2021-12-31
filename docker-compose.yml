@@ -7,25 +7,35 @@ services:
       context: ./api
       dockerfile: ./Dockerfile
     container_name: token-auth-server
+    
     volumes:
-      - ./api/src:/home/api/src
+      - '${PWD}/api:/api'
     depends_on:
       - api_mongo
-    environment:
-      - URI=http://0.0.0.0:3001
-      - MONGO_URL=mongodb://api_mongo:27017
-      - DB_NAME=token-auth-server
-      - API_VERSION=v1
     ports:
       - "3001:3001"
+    networks:
+      - backend
+      - database
+    env_file:
+      - '.env'      
 
   api_mongo:
-   image: mongo:latest
-   container_name: api_mongo
-   volumes:
-     - mongodb_api:/data/db
-   ports:
-     - '27017:27017'
+    image: mongo:latest
+    container_name: api_mongo
+    volumes:
+      - mongodb_api:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      - database
+    env_file:
+      - '.env'      
 
 volumes:
   mongodb_api:
+
+networks:
+  frontend:
+  backend:  
+  database:
