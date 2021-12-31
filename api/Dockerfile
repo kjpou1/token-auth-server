@@ -22,17 +22,13 @@ ADD . .
 # Compile the mods app so that it doesn't need to be compiled each startup/entry.
 RUN deno cache ${DENO_RUN_OPTIONS} src/mod.ts
 
-RUN echo "==============================="
-RUN echo "* Generating secret key ...   *"
-RUN echo "==============================="
-# Generate JWT key used for signing and verifying
-RUN deno run -A Drakefile.ts gen-secret
-RUN echo "==============================="
-RUN echo "* Secret key file generated   *"
-RUN echo "==============================="
-#RUN ln -sf /dev/stdout
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
 CMD ["run", "--allow-net", "--allow-env", "--allow-read", "--allow-write", "--unstable", "--import-map=import_map.json", "src/mod.ts"]
 # The port that the auth server application listens to.
 EXPOSE 3001
 
-ENTRYPOINT ["/usr/local/bin/denon"]
+
+#ENTRYPOINT ["/usr/local/bin/denon"]
