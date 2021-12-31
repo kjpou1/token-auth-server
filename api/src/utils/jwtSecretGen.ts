@@ -1,4 +1,8 @@
+import { log } from "./deps.ts";
 export async function jwtSecretGen() {
+  log.info("===============================");
+  log.info("* Generating secret key ...   *");
+  log.info("===============================");
   const key = await crypto.subtle.generateKey(
     {
       name: "HMAC",
@@ -10,10 +14,14 @@ export async function jwtSecretGen() {
   const jasonWebKey = await crypto.subtle.exportKey("jwk", key);
   if (jasonWebKey.k) {
     await Deno.writeTextFile("./id_hmac_pub.key", jasonWebKey.k);
-    console.log("Keyfile was generated");
+    log.info("===============================");
+    log.info("* Keyfile was generated       *");
+    log.info("===============================");
     Deno.exit(0);
   }
 
-  console.log("Error generating keyfile");
+  log.critical("===============================");
+  log.critical("* Error generating keyfile    *");
+  log.critical("===============================");
   Deno.exit(-1);
 }
