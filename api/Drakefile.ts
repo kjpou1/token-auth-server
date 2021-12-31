@@ -1,5 +1,6 @@
 import { desc, run, sh, task } from "https://deno.land/x/drake@v1.5.0/mod.ts";
 import { jwtSecretGen } from "./src/utils/jwtSecretGen.ts";
+import { databaseSeed } from "./src/utils/databaseSeed.ts";
 
 desc("Help");
 task("help", [], function () {
@@ -89,4 +90,8 @@ task("gen-secret", [], async function () {
   await jwtSecretGen();
 });
 
+desc("Seed database");
+task("seed", [], async function () {
+  await databaseSeed();
+});
 run();
