@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "start": {
+      "cmd": "denon run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json src/mod.ts"
+    }
+  },
+  "watcher": {
+    "exts": ["js", "jsx", "ts", "tsx", "json"],
+    "match": ["**/*.*"],
+    "skip": ["Dockerfile"]
+  },
+  "logger": {
+    "fullscreen": false,
+    "quiet": false,
+    "debug": true
+  }
+}
