@@ -166,20 +166,40 @@ https://github.com/Octo8080/deno-csrf
 
 ## Running from dockerfile
 
+If one really wants to run from `Dockerfile` then do the following:
+
+First start the database service from the compose file
+
+```
+docker-compose up --build api-mongo
+```
+
+Then the following but do not forget to replace the IP address for the mongo db.
+
 ```
 cd api
-docker build -t token-auth-server . && docker run -it --init -p 3001:3001 -e MONGO_URL=mongodb://192.168.178.223:27017 token-auth-server
+docker image build -t token-auth-server . && docker container run -it --init -p 3001:3001 -e URI=http://0.0.0.0:3001 --rm --name token-auth-server2 -v "$PWD:/api" -e MONGO_URL=mongodb://`{ Local HOST IP ADDRESS}`:27017 token-auth-server
+```
+
+```
+docker container exec -it `container-name` sh
 ```
 
 ## Docker compose commands
 
-Rebuild
+# Rebuild
 
 ```
 docker-compose down && docker-compose build
 ```
 
-Start the compose containers
+- or -
+
+  ```
+  docker-compose up --build
+  ```
+
+Start the compose containers without building
 
 ```
 docker-compose up
