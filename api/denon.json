@@ -5,9 +5,9 @@
     }
   },
   "watcher": {
-    "exts": ["js", "jsx", "ts", "tsx", "json"],
+    "exts": ["js", "jsx", "ts", "tsx", "json", "env"],
     "match": ["**/*.*"],
-    "skip": ["Dockerfile"]
+    "skip": ["Dockerfile", "denon.json"]
   },
   "logger": {
     "fullscreen": false,
