@@ -8,11 +8,14 @@ import {
 } from "./deps.ts";
 import { config } from "../config/config.ts";
 import { UserSchema } from "../schemas/schemas.ts";
-import { CreateUser, UserRole } from "../types/user/userTypes.ts";
+import { UserRole } from "../types/user/userTypes.ts";
 
 const {
   MONGODB_URI,
   MONGODB_DATABASE_NAME,
+  SEED_NAME,
+  SEED_EMAIL,
+  SEED_PASSWORD,
 } = config;
 
 export async function databaseSeed() {
@@ -69,9 +72,9 @@ export async function databaseSeed() {
       }
       const roles: UserRole[] = [UserRole.SUPER, UserRole.ADMIN];
       const adminUser = {
-        name: "Admin",
-        email: "admin",
-        password: await bcrypt.hash("admin"),
+        name: SEED_NAME,
+        email: SEED_EMAIL,
+        password: await bcrypt.hash(SEED_PASSWORD),
         emailVerified: true,
         active: true,
         createdOn: new Date(),
