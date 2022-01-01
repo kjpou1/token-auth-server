@@ -1,5 +1,8 @@
 import { Context, log } from "../utils/deps.ts";
 import { config } from "../config/config.ts";
+const {
+  JWT_COOKIE_NAME,
+} = config;
 import { TokenService } from "../services/services.ts";
 
 // Authorization middleware that checks that
@@ -10,7 +13,7 @@ export const httpOnlyCookieAuthMiddleware = async (
   next: () => Promise<unknown>,
 ) => {
   const { cookies, state } = ctx;
-  const jwtToken = await cookies.get(config.JWT_COOKIE_NAME) ?? "";
+  const jwtToken = await cookies.get(JWT_COOKIE_NAME) ?? "";
   if (jwtToken) {
     const payload = await TokenService.getJwtPayload(jwtToken);
     if (payload) {

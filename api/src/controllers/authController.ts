@@ -7,7 +7,6 @@ import {
   RouterContext,
   RouterMiddleware,
 } from "../utils/deps.ts";
-import { config } from "../config/config.ts";
 import { UserSchema } from "../schemas/schemas.ts";
 import {
   EncryptionService,
@@ -23,14 +22,23 @@ import {
   RefreshToken,
 } from "../types/authentication/tokenTypes.ts";
 import { createUserValidationSchema } from "../validators/request-validations.ts";
+import { config } from "../config/config.ts";
+const {
+  JWT_REFRESH_TOKEN_EXP,
+  JWT_COOKIE_NAME,
+  JWT_ACCESS_TOKEN_NAME,
+  JWT_REFRESH_TOKEN_NAME,
+  AUTH_TOKEN_TYPE,
+  JWT_ACCESS_TOKEN_EXP,
+} = config;
 
 export const Register: [
-  RouterMiddleware<"">,
+  //RouterMiddleware<"">,
   RouterMiddleware<"">,
   RouterMiddleware<"/api/v1/register">,
 ] = [
   /** authorization and user role access policy middleware */
-  authorize(),
+  //authorize(),
   /** request validation middleware */
   requestValidator({ bodyRules: createUserValidationSchema }),
   async (
@@ -88,7 +96,7 @@ async function setAuthResponse(
    */
 
   let tokens = {} as CreateTokens;
-  let lifeTime = Number(config.JWT_REFRESH_TOKEN_EXP);
+  let lifeTime = Number(JWT_REFRESH_TOKEN_EXP);
 
   if (refreshToken) {
     tokens = await TokenService.createRotatedTokens(
@@ -111,19 +119,19 @@ async function setAuthResponse(
   // calculate the expiration date of the refresh token httpOnly Cookie
   const expd = new Date();
   expd.setTime(expd.getTime() + lifeTime * 1000);
-  await cookies.set(config.JWT_COOKIE_NAME, tokens.refreshToken ?? "", {
+  await cookies.set(JWT_COOKIE_NAME, tokens.refreshToken ?? "", {
     httpOnly: true,
     expires: expd,
   });
 
   const responseTokens: Record<string, string | undefined> = {};
-  responseTokens[config.JWT_ACCESS_TOKEN_NAME] = tokens.accessToken;
-  responseTokens[config.JWT_REFRESH_TOKEN_NAME] = tokens.refreshToken;
+  responseTokens[JWT_ACCESS_TOKEN_NAME] = tokens.accessToken;
+  responseTokens[JWT_REFRESH_TOKEN_NAME] = tokens.refreshToken;
 
   const loginResponse: LoginUserResponse = {
     ...responseTokens,
-    tokenType: config.AUTH_TOKEN_TYPE,
-    expiresIn: Number(config.JWT_ACCESS_TOKEN_EXP),
+    tokenType: AUTH_TOKEN_TYPE,
+    expiresIn: Number(JWT_ACCESS_TOKEN_EXP),
     user: createResponseUser(user),
   };
 
@@ -161,8 +169,8 @@ export const Logout: [
   (
     { response, cookies }: RouterContext<"logout">,
   ) => {
-    log.debug(`Logging out and deleting cookie: ${config.JWT_COOKIE_NAME} `);
-    cookies.delete(config.JWT_COOKIE_NAME);
+    log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
+    cookies.delete(JWT_COOKIE_NAME);
     response.body = {
       status: 200,
       message: "success",
@@ -192,8 +200,8 @@ export const Token: [
         await setAuthResponse(response, cookies, user, refreshToken);
       }
     } else {
-      log.debug(`Logging out and deleting cookie: ${config.JWT_COOKIE_NAME} `);
-      cookies.delete(config.JWT_COOKIE_NAME);
+      log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
+      cookies.delete(JWT_COOKIE_NAME);
       throw new httpErrors.Unauthorized("Refresh token is invalid or expired.");
     }
   },

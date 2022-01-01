@@ -14,6 +14,13 @@ import {
 } from "../types/authentication/tokenTypes.ts";
 import { TokenRepository } from "../repositories/repositories.ts";
 
+const {
+  JWT_ACCESS_TOKEN_EXP,
+  JWT_CLAIM_ISSUER,
+  JWT_CLAIM_AUDIENCE,
+  JWT_REFRESH_TOKEN_EXP,
+} = config;
+
 // tokens definition
 const repository = new TokenRepository();
 
@@ -38,10 +45,10 @@ export class TokenService {
     const numericDate = djwt.getNumericDate(new Date());
 
     const payload: AccessToken = {
-      iss: config.JWT_CLAIM_ISSUER,
+      iss: JWT_CLAIM_ISSUER,
       sub: JSON.stringify(subject),
-      aud: config.JWT_CLAIM_AUDIENCE,
-      exp: this.createExpirationDate(Number(config.JWT_ACCESS_TOKEN_EXP)),
+      aud: JWT_CLAIM_AUDIENCE,
+      exp: this.createExpirationDate(Number(JWT_ACCESS_TOKEN_EXP)),
       nbf: numericDate,
       iat: numericDate,
       jti: crypto.randomUUID(),
@@ -70,7 +77,7 @@ export class TokenService {
   ): Promise<string> {
     const refreshPayload: RefreshToken = {
       sub: JSON.stringify(subject),
-      exp: this.createExpirationDate(Number(config.JWT_REFRESH_TOKEN_EXP)),
+      exp: this.createExpirationDate(Number(JWT_REFRESH_TOKEN_EXP)),
       jti: crypto.randomUUID(),
     };
     const refreshToken = await djwt.create(
@@ -79,7 +86,7 @@ export class TokenService {
       await EncryptionService.keyHS512,
     );
     const expd = new Date();
-    expd.setTime(expd.getTime() + Number(config.JWT_REFRESH_TOKEN_EXP) * 1000);
+    expd.setTime(expd.getTime() + Number(JWT_REFRESH_TOKEN_EXP) * 1000);
 
     const tokenEntity = {
       token: refreshPayload.jti,

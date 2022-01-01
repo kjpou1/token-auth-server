@@ -1,6 +1,8 @@
-import { dotenv, join, log, omit } from "./deps.ts";
+import { join, log, omit } from "./deps.ts";
 import { ResponseUser, UserRole } from "../types/user/userTypes.ts";
 import { UserSchema } from "../schemas/schemas.ts";
+import { config } from "../config/config.ts";
+const { JWT_SECRET_FILE } = config;
 
 export async function getBannerText() {
   const path = join("data", "banner.txt");
@@ -10,9 +12,7 @@ export async function getBannerText() {
 
 function ensureSecretKeyFileExists() {
   try {
-    const fileInfo = Deno.statSync(
-      Deno.env.get("JWT_SECRET_FILE") ?? "./DEADBEEF",
-    );
+    const fileInfo = Deno.statSync(JWT_SECRET_FILE);
     if (!fileInfo.isFile) {
       log.critical(
         "Internal Server Error: Crypto Key file not found.  Please generate a file and retry.",

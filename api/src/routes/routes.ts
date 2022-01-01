@@ -7,7 +7,11 @@ import {
   userRoutes,
 } from "../controllers/controllers.ts";
 
-const router = new Router({ prefix: config.API_SERVER_PATH });
+const {
+  API_SERVER_PATH,
+} = config;
+
+const router = new Router({ prefix: API_SERVER_PATH });
 
 router.get("/", bannerRoutes.Banner);
 

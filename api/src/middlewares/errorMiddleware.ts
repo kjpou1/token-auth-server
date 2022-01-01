@@ -1,5 +1,6 @@
 import { Context, isHttpError, log, Status } from "../utils/deps.ts";
 import { config } from "./../config/config.ts";
+const { ENV } = config;
 
 const errorMiddleware = async (ctx: Context, next: () => Promise<unknown>) => {
   try {
@@ -14,12 +15,12 @@ const errorMiddleware = async (ctx: Context, next: () => Promise<unknown>) => {
      * end user in non "development" mode
      */
     if (!isHttpError(err)) {
-      message = config.ENV === "dev" || config.ENV === "development"
+      message = ENV === "dev" || ENV === "development"
         ? message
         : "Internal Server Error";
     }
 
-    if (config.ENV === "dev" || config.ENV === "development") {
+    if (ENV === "dev" || ENV === "development") {
       log.error(err);
     }
 

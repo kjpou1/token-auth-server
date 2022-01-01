@@ -1,5 +1,9 @@
 import { log, MongoClient } from "../utils/deps.ts";
 import { config } from "../config/config.ts";
+const {
+  MONGODB_URI,
+  MONGODB_DATABASE_NAME,
+} = config;
 
 /**
  * Manage mongo database connection implemented in singleton
@@ -11,8 +15,8 @@ class MongoDatabase {
   private DB_NAME: string;
   constructor() {
     // First check for environment override parameters
-    this.MONGO_URI = config.MONGODB_URI;
-    this.DB_NAME = config.MONGODB_DATABASE_NAME;
+    this.MONGO_URI = MONGODB_URI;
+    this.DB_NAME = MONGODB_DATABASE_NAME;
     this.client = {} as MongoClient;
   }
 
