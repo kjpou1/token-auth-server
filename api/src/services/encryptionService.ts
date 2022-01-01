@@ -1,4 +1,4 @@
-import { bcrypt, djwt, log } from "../utils/deps.ts";
+import { bcrypt } from "../utils/deps.ts";
 import { config } from "../config/config.ts";
 const { JWT_SECRET_FILE } = config;
 
