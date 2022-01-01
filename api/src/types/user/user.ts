@@ -5,10 +5,10 @@ export type User = {
   _id: Bson.ObjectId;
   name: string;
   email: string;
-  emailVerified?: boolean;
+  emailVerified: boolean;
   password: string;
-  active?: boolean;
-  createdOn?: Date;
+  active: boolean;
+  createdOn: Date;
   modifiedOn?: Date;
   blockedOn?: Date;
 };

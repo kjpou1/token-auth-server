@@ -38,6 +38,9 @@ export class UserService {
       name,
       email,
       password: await EncryptionService.encrypt(password),
+      emailVerified: false,
+      active: true,
+      createdOn: new Date(),
       roles,
     });
     return await this.getUserById(lastInsertId);
