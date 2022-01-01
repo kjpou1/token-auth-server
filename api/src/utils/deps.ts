@@ -17,7 +17,7 @@ export {
   Status,
 } from "oak";
 export type { RouteParams, RouterContext, RouterMiddleware } from "oak";
-export { omit } from "lodash";
+export { isEmpty, omit } from "lodash";
 export { Bson, Collection, Database, MongoClient } from "mongodb";
 export * as bcrypt from "bcrypt";
 export * as djwt from "djwt";
