@@ -1,0 +1,8 @@
+{
+    "files.exclude": {
+        //"node_modules/": true
+    },
+    "editor.selectionHighlight": false,
+    "eslint.format.enable": true,
+    "eslint.packageManager": "yarn"
+}
