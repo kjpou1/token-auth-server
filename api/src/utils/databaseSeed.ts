@@ -1,3 +1,6 @@
+import { config } from "../config/config.ts";
+import { UserSchema } from "../schemas/schemas.ts";
+import { UserRole } from "../types/user/userTypes.ts";
 import {
   bcrypt,
   Collection,
@@ -6,9 +9,6 @@ import {
   log,
   MongoClient,
 } from "./deps.ts";
-import { config } from "../config/config.ts";
-import { UserSchema } from "../schemas/schemas.ts";
-import { UserRole } from "../types/user/userTypes.ts";
 
 const {
   MONGODB_URI,
