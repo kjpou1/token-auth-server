@@ -20,6 +20,24 @@ services:
     env_file:
       - '.env'      
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    container_name: token-auth-frontend
+    
+    volumes:
+      - '${PWD}/frontend:/app'
+    depends_on:
+      - api
+    ports:
+      - "3002:3002"
+    networks:
+      - frontend
+      - backend
+    env_file:
+      - '.env'
+
   api_mongo:
     image: mongo:latest
     container_name: api_mongo
