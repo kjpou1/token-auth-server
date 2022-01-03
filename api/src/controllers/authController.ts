@@ -226,43 +226,52 @@ export const TokenResult: [
     if (resultId) {
       const tokenInfo = await TokenService.getTokenResult(resultId);
       if (tokenInfo?.expiresOn) {
+        let accessTokenlifeTime = 0;
         let lifeTime = 0;
 
         const accessToken = await TokenService.getJwtPayload(
           tokenInfo.associatedToken ?? "",
         );
         if (accessToken?.exp) {
-          console.log(accessToken);
-          // Calculate the new cookie lifetime based off of the rotated refresh token
+          // Calculate the new cookie lifetime based off of the access token
           // expiration date.
-          lifeTime = Math.floor(Math.abs(
+          accessTokenlifeTime = Math.floor(Math.abs(
             (new Date().getTime() -
               new Date(accessToken.exp * 1000).getTime()) /
               1000,
           ));
 
+          // Calculate the new cookie lifetime based off of the access token
+          // expiration date.
+          const lifeTime = Math.round(Math.abs(
+            (new Date().getTime() - tokenInfo.expiresOn.getTime()) /
+              1000,
+          ));
+
           // calculate the expiration date of the refresh token httpOnly Cookie
-          const expd = new Date();
-          expd.setTime(expd.getTime() + lifeTime * 1000);
+          const refreshExpd = new Date();
+          refreshExpd.setTime(refreshExpd.getTime() + lifeTime * 1000);
+
           await cookies.set(JWT_COOKIE_NAME, tokenInfo.token ?? "", {
             httpOnly: true,
-            expires: expd,
+            expires: refreshExpd,
           });
 
           const responseTokens: Record<string, string | undefined> = {};
           responseTokens[JWT_ACCESS_TOKEN_NAME] = tokenInfo.associatedToken;
           responseTokens[JWT_REFRESH_TOKEN_NAME] = tokenInfo.token;
 
-          const user = await UserService.getUserById(
+          const user: UserSchema = await UserService.getUserById(
             tokenInfo.userId,
-          ) as unknown;
+          ) as UserSchema;
+
           if (user) {
             const loginResponse: LoginUserResponse = {
               ...responseTokens,
               jti: resultId,
               tokenType: AUTH_TOKEN_TYPE,
-              expiresIn: lifeTime,
-              user: createResponseUser(user as UserSchema),
+              expiresIn: accessTokenlifeTime,
+              user: createResponseUser(user),
             };
 
             response.body = {
