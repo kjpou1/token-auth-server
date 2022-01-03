@@ -4,18 +4,17 @@
         <div class="px-2 flex flex-col items-center justify-center mt-8 sm:mt-0">
             <h2 class="text-4xl dark:text-gray-100 leading-tight pt-8">[[ Your Logo ]]</h2>
         </div>
+          <div class="text-white text-center font-bold p-4 mb-4"
+            v-if="reg_show_alert" :class="reg_alert_variant">
+            {{ reg_alert_msg }}
+          </div>
 
-        <div class="text-white text-center font-bold p-5 mb-4"
-        v-if="reg_show_alert"
-        :class="reg_alert_variant">
-        {{ reg_alert_msg}}
-        </div>
         <div class="mx-auto flex justify-center md:items-center relative md:h-full">
           <!-- Registration Form -->
           <vee-form id="register" :validation-schema="schema"
             @submit="register"
             class="w-full sm:w-4/6 md:w-3/6 lg:w-4/12 xl:w-3/12 text-gray-800 mb-32 sm:mb-0 my-40 sm:my-12 px-2 sm:px-0">
-            <div class="pt-16 px-2 flex flex-col items-center justify-center">
+            <div class="pt-0 px-2 flex flex-col items-center justify-center">
                 <h3 class="text-2xl sm:text-3xl xl:text-2xl font-bold dark:text-gray-100 leading-tight">Register</h3>
             </div>
 
@@ -83,6 +82,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'RegisterForm',
   data() {
@@ -104,15 +105,19 @@ export default {
     // this.submit();
   },
   methods: {
-    register(values) {
+    async register(values) {
       this.reg_show_alert = true;
       this.reg_in_submission = true;
       this.reg_alert_variant = 'bg-blue-500';
       this.reg_alert_msg = 'Please wait!  Your account is being created.';
 
-      this.reg_alert_variant = 'bg-green-500';
-      this.reg_alert_msg = 'Success! Your account has been created';
-      console.log(values);
+      try {
+        await this.$store.dispatch('register', values);
+      } catch (error) {
+        this.reg_in_submission = false;
+        this.reg_alert_variant = 'bg-red-500';
+        this.reg_alert_msg = 'An unexpected error occured.  Please try again later.';
+      }
     },
     submit() {
       const form = document.getElementById('register');
@@ -140,6 +145,27 @@ export default {
         },
         true,
       );
+    },
+  },
+  computed: {
+    // mix the getters into computed with object spread operator
+    ...mapGetters([
+      'isRegistrationError',
+      'isRegistered',
+      'getRegistrationErrorMessage',
+      // ...
+    ]),
+  },
+  watch: {
+    isRegistered() {
+      this.reg_in_submission = false;
+      this.reg_alert_variant = 'bg-green-500';
+      this.reg_alert_msg = 'Success! Your account has been created';
+    },
+    isRegistrationError() {
+      this.reg_in_submission = false;
+      this.reg_alert_variant = this.getRegistrationErrorMessage !== null ? 'bg-red-500' : '';
+      this.reg_alert_msg = this.getRegistrationErrorMessage;
     },
   },
 };
