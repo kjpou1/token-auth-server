@@ -58,7 +58,7 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
 app.use(
   oakCors({
     credentials: true,
-    origin: /^.+localhost:(3000|4200|8080)$/,
+    origin: /^.+localhost:(3002|4200|8080)$/,
   }),
 );
 
