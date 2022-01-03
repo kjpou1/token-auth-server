@@ -56,6 +56,19 @@ export class TokenService {
       payload,
       await EncryptionService.keyHS512,
     );
+    const expd = new Date(payload.exp);
+    expd.setTime(expd.getTime() * 1000);
+
+    const tokenEntity = {
+      jti: payload.jti,
+      token: accessToken,
+      userId: subject._id,
+      type: TokenType.ACCESS,
+      expiresOn: expd,
+      createdOn: new Date(),
+    } as TokenEntryCreate;
+    const entity = await repository.create(tokenEntity);
+
     return accessToken;
   }
 
@@ -72,6 +85,7 @@ export class TokenService {
    */
   static async createRefreshToken(
     subject: Record<string, string | Bson.ObjectId | [UserRole]>,
+    accessToken: string,
   ): Promise<string> {
     const refreshPayload: RefreshToken = {
       sub: JSON.stringify(subject),
@@ -87,7 +101,9 @@ export class TokenService {
     expd.setTime(expd.getTime() + Number(JWT_REFRESH_TOKEN_EXP) * 1000);
 
     const tokenEntity = {
-      token: refreshPayload.jti,
+      jti: refreshPayload.jti,
+      token: refreshToken,
+      associatedToken: accessToken,
       userId: subject._id,
       type: TokenType.REFRESH,
       expiresOn: expd,
@@ -100,6 +116,7 @@ export class TokenService {
   static async rotateRefreshToken(
     subject: Record<string, string | Bson.ObjectId | [UserRole]>,
     lifeTime: number,
+    accessToken: string,
   ): Promise<string> {
     const refreshPayload: RefreshToken = {
       sub: JSON.stringify(subject),
@@ -117,7 +134,9 @@ export class TokenService {
     expd.setTime(expd.getTime() + lifeTime * 1000);
 
     const tokenEntity = {
-      token: refreshPayload.jti,
+      jti: refreshPayload.jti,
+      token: refreshToken,
+      associatedToken: accessToken,
       userId: subject._id,
       type: TokenType.REFRESH,
       expiresOn: expd,
@@ -145,10 +164,12 @@ export class TokenService {
     // This routine returns back the number of matches and the number of updates
     await repository.updateAll(query, updData);
 
-    const createdTokens: CreateTokens = {
-      accessToken: await this.createAccessToken(subject),
-      refreshToken: await this.createRefreshToken(subject),
-    };
+    const createdTokens: CreateTokens = {} as CreateTokens;
+    createdTokens.accessToken = await this.createAccessToken(subject);
+    createdTokens.refreshToken = await this.createRefreshToken(
+      subject,
+      createdTokens.accessToken,
+    );
 
     return createdTokens;
   }
@@ -161,16 +182,41 @@ export class TokenService {
       (new Date().getTime() - new Date(refreshToken.exp * 1000).getTime()) /
         1000,
     ));
-    return {
-      accessToken: await this.createAccessToken(subject),
-      refreshToken: await this.rotateRefreshToken(subject, lifeTime),
-    };
+    const createdTokens: CreateTokens = {} as CreateTokens;
+    createdTokens.accessToken = await this.createAccessToken(subject);
+    createdTokens.refreshToken = await this.rotateRefreshToken(
+      subject,
+      lifeTime,
+      createdTokens.accessToken,
+    );
+
+    return createdTokens;
+  }
+
+  static async expireCurrentToken(
+    jti: string,
+  ): Promise<void> {
+    const currentToken = await repository.findBy({ jti });
+    if (currentToken) {
+      const { _id } = currentToken;
+      // we now update our token to specify that it has already been used before
+      // Expire current access token.
+      const expd = new Date();
+      expd.setTime(expd.getTime() - 1000);
+      const updData = {
+        expiresOn: expd,
+        lastUsedOn: new Date(),
+        updatedOn: new Date(),
+      };
+
+      await repository.update(_id, updData);
+    }
   }
 
   static async validateRotationToken(
     refreshToken: RefreshToken,
   ): Promise<boolean> {
-    const query = { token: refreshToken.jti, type: TokenType.REFRESH };
+    const query = { jti: refreshToken.jti, type: TokenType.REFRESH };
     const token = await repository.findBy(query) as Token;
     if (!token) {
       throw new httpErrors.Forbidden("Invalid refresh token.");

@@ -1,5 +1,5 @@
-import { Context, httpErrors } from "../utils/deps.ts";
 import { TokenService } from "../services/services.ts";
+import { Context } from "../utils/deps.ts";
 
 // Authorization middleware that checks that
 // the "Authorization" cookie is present
@@ -25,6 +25,7 @@ export const bearerAuthMiddleware = async (
       if (payload?.sub) {
         //console.log(payload);
         state.user = JSON.parse(payload?.sub);
+        state.bearerJti = payload?.jti;
       }
     } catch { /* intentionally left blank */ }
   }
