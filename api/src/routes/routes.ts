@@ -1,4 +1,3 @@
-import { Router } from "../utils/deps.ts";
 import { config } from "../config/config.ts";
 import {
   authRoutes,
@@ -6,6 +5,7 @@ import {
   resetRoutes,
   userRoutes,
 } from "../controllers/controllers.ts";
+import { Router } from "../utils/deps.ts";
 
 const {
   API_SERVER_PATH,
