@@ -25,7 +25,7 @@ const errorMiddleware = async (ctx: Context, next: () => Promise<unknown>) => {
     }
 
     ctx.response.status = status;
-    ctx.response.body = { status, message };
+    ctx.response.body = { code: "error", status, message };
   }
 };
 
