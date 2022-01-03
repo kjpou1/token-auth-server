@@ -200,6 +200,7 @@ export const Token: [
       }
       if (refreshToken.sub) {
         const user = JSON.parse(refreshToken.sub) as UserSchema;
+        await TokenService.expireCurrentToken(state.jti);
         await setAuthResponse(response, cookies, user, refreshToken);
       }
     } else {
