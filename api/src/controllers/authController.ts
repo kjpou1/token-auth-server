@@ -1,3 +1,20 @@
+import { config } from "../config/config.ts";
+import { authorize, requestValidator } from "../middlewares/middlewares.ts";
+import { UserSchema } from "../schemas/schemas.ts";
+import {
+  EncryptionService,
+  TokenService,
+  UserService,
+} from "../services/services.ts";
+import {
+  CreateTokens,
+  RefreshToken,
+} from "../types/authentication/tokenTypes.ts";
+import {
+  CreateUser,
+  LoginUserResponse,
+  UserRole,
+} from "../types/user/userTypes.ts";
 import {
   Bson,
   Cookies,
@@ -7,22 +24,8 @@ import {
   RouterContext,
   RouterMiddleware,
 } from "../utils/deps.ts";
-import { UserSchema } from "../schemas/schemas.ts";
-import {
-  EncryptionService,
-  TokenService,
-  UserService,
-} from "../services/services.ts";
-import { CreateUser } from "../types/user/userTypes.ts";
 import { createResponseUser, createTokenPayload } from "../utils/utils.ts";
-import { authorize, requestValidator } from "../middlewares/middlewares.ts";
-import { LoginUserResponse, UserRole } from "../types/user/userTypes.ts";
-import {
-  CreateTokens,
-  RefreshToken,
-} from "../types/authentication/tokenTypes.ts";
 import { createUserValidationSchema } from "../validators/request-validations.ts";
-import { config } from "../config/config.ts";
 const {
   JWT_REFRESH_TOKEN_EXP,
   JWT_COOKIE_NAME,
