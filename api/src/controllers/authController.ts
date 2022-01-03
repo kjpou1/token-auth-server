@@ -58,7 +58,12 @@ export const Register: [
       await UserService.createUser(user) as UserSchema,
     );
 
-    response.body = userData;
+    response.body = {
+      code: "success",
+      status: 200,
+      message: "success",
+      details: userData,
+    };
   },
 ];
 
