@@ -1,7 +1,7 @@
+import * as middlewares from "./middlewares/middlewares.ts";
+import routes from "./routes/routes.ts";
 import { Application, log, oakCors } from "./utils/deps.ts";
 import { ensureEnvironment } from "./utils/utils.ts";
-import routes from "./routes/routes.ts";
-import * as middlewares from "./middlewares/middlewares.ts";
 
 ensureEnvironment();
 
