@@ -1,18 +1,16 @@
-import { Bson, djwt, httpErrors, log } from "../utils/deps.ts";
+import { config } from "../config/config.ts";
+import { TokenRepository } from "../repositories/repositories.ts";
 import { EncryptionService, UserService } from "../services/services.ts";
 import {
   AccessToken,
   CreateTokens,
   RefreshToken,
   Token,
-} from "../types/authentication/tokenTypes.ts";
-import { config } from "../config/config.ts";
-import { UserRole } from "../types/user/userTypes.ts";
-import {
   TokenEntryCreate,
   TokenType,
 } from "../types/authentication/tokenTypes.ts";
-import { TokenRepository } from "../repositories/repositories.ts";
+import { UserRole } from "../types/user/userTypes.ts";
+import { Bson, djwt, httpErrors, log } from "../utils/deps.ts";
 
 const {
   JWT_ACCESS_TOKEN_EXP,
