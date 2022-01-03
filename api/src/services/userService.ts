@@ -13,7 +13,7 @@ export class UserService {
   /**
    * get user by user id
    */
-  static async getUserById(_id: Bson.ObjectId) {
+  static async getUserById(_id: Bson.ObjectId): Promise<UserSchema | null> {
     const user = await repository.find(_id);
     return user;
   }
@@ -22,7 +22,7 @@ export class UserService {
    * get user by email
    * return user info with password
    */
-  static async getUserByEmail(email: string) {
+  static async getUserByEmail(email: string): Promise<UserSchema | null> {
     const user = await repository.findBy({ email });
     return user;
   }
