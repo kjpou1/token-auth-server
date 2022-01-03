@@ -19,7 +19,8 @@ router.post("register", ...authRoutes.Register)
   .post("login", authRoutes.Login)
   .get("user", ...authRoutes.Me)
   .post("logout", ...authRoutes.Logout)
-  .post("token", ...authRoutes.Token);
+  .post("token", ...authRoutes.Token)
+  .get("token/:resultId", ...authRoutes.TokenResult);
 
 router.get(
   "users",

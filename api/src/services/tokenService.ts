@@ -86,7 +86,7 @@ export class TokenService {
   static async createRefreshToken(
     subject: Record<string, string | Bson.ObjectId | [UserRole]>,
     accessToken: string,
-  ): Promise<string> {
+  ): Promise<Record<string, string>> {
     const refreshPayload: RefreshToken = {
       sub: JSON.stringify(subject),
       exp: this.createExpirationDate(Number(JWT_REFRESH_TOKEN_EXP)),
@@ -109,8 +109,8 @@ export class TokenService {
       expiresOn: expd,
       createdOn: new Date(),
     } as TokenEntryCreate;
-    const entity = await repository.create(tokenEntity);
-    return refreshToken;
+    await repository.create(tokenEntity);
+    return { refreshToken, jti: tokenEntity.jti };
   }
 
   static async rotateRefreshToken(
@@ -166,11 +166,13 @@ export class TokenService {
 
     const createdTokens: CreateTokens = {} as CreateTokens;
     createdTokens.accessToken = await this.createAccessToken(subject);
-    createdTokens.refreshToken = await this.createRefreshToken(
+
+    const refreshTokenInfo = await this.createRefreshToken(
       subject,
       createdTokens.accessToken,
     );
-
+    createdTokens.refreshToken = refreshTokenInfo.refreshToken;
+    createdTokens.jti = refreshTokenInfo.jti;
     return createdTokens;
   }
 
@@ -264,6 +266,13 @@ export class TokenService {
       throw new httpErrors.Unauthorized("Error updating token information");
     }
     return true;
+  }
+
+  static async getTokenResult(
+    resultId: string,
+  ): Promise<Token | null> {
+    const resultToken = await repository.findBy({ jti: resultId });
+    return resultToken;
   }
 
   static async clearAll(): Promise<boolean> {

@@ -18,6 +18,7 @@ import {
 import {
   Bson,
   Cookies,
+  helpers,
   httpErrors,
   log,
   Response,
@@ -133,6 +134,7 @@ async function setAuthResponse(
 
   const loginResponse: LoginUserResponse = {
     ...responseTokens,
+    jti: tokens.jti,
     tokenType: AUTH_TOKEN_TYPE,
     expiresIn: Number(JWT_ACCESS_TOKEN_EXP),
     user: createResponseUser(user),
@@ -207,6 +209,85 @@ export const Token: [
       log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
       cookies.delete(JWT_COOKIE_NAME);
       throw new httpErrors.Unauthorized("Refresh token is invalid or expired.");
+    }
+  },
+];
+
+export const TokenResult: [
+  RouterMiddleware<"token/:resultId">,
+] = [
+  async (
+    ctx: RouterContext<"token/:resultId">,
+  ) => {
+    const { response, request, cookies } = ctx;
+
+    /** get user id from params */
+    const { resultId } = helpers.getQuery(ctx, { mergeParams: true });
+    if (resultId) {
+      const tokenInfo = await TokenService.getTokenResult(resultId);
+      if (tokenInfo?.expiresOn) {
+        let lifeTime = 0;
+
+        const accessToken = await TokenService.getJwtPayload(
+          tokenInfo.associatedToken ?? "",
+        );
+        if (accessToken?.exp) {
+          console.log(accessToken);
+          // Calculate the new cookie lifetime based off of the rotated refresh token
+          // expiration date.
+          lifeTime = Math.floor(Math.abs(
+            (new Date().getTime() -
+              new Date(accessToken.exp * 1000).getTime()) /
+              1000,
+          ));
+
+          // calculate the expiration date of the refresh token httpOnly Cookie
+          const expd = new Date();
+          expd.setTime(expd.getTime() + lifeTime * 1000);
+          await cookies.set(JWT_COOKIE_NAME, tokenInfo.token ?? "", {
+            httpOnly: true,
+            expires: expd,
+          });
+
+          const responseTokens: Record<string, string | undefined> = {};
+          responseTokens[JWT_ACCESS_TOKEN_NAME] = tokenInfo.associatedToken;
+          responseTokens[JWT_REFRESH_TOKEN_NAME] = tokenInfo.token;
+
+          const user = await UserService.getUserById(
+            tokenInfo.userId,
+          ) as unknown;
+          if (user) {
+            const loginResponse: LoginUserResponse = {
+              ...responseTokens,
+              jti: resultId,
+              tokenType: AUTH_TOKEN_TYPE,
+              expiresIn: lifeTime,
+              user: createResponseUser(user as UserSchema),
+            };
+
+            response.body = {
+              code: "success",
+              status: 200,
+              message: "success",
+              details: loginResponse,
+            };
+            return;
+          } else {
+            log.debug(
+              `user id associated with token was not found: ${tokenInfo.userId} `,
+            );
+          }
+        } else {
+          log.debug(
+            `Access token associated with request is invalid or expired: ${resultId} `,
+          );
+        }
+      }
+      log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
+      cookies.delete(JWT_COOKIE_NAME);
+      throw new httpErrors.BadRequest(
+        "Token result request is invalid or expired.",
+      );
     }
   },
 ];
