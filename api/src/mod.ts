@@ -62,11 +62,13 @@ app.use(
   }),
 );
 
+app.use(middlewares.setContentType);
+app.use(middlewares.timingMiddleware);
 app.use(middlewares.errorMiddleware);
 app.use(middlewares.loggerMiddleware);
-app.use(middlewares.timingMiddleware);
 app.use(middlewares.bearerAuthMiddleware);
 app.use(middlewares.httpOnlyCookieAuthMiddleware);
+
 app.use(routes.routes());
 app.use(routes.allowedMethods());
 app.use(middlewares.notFoundMiddleware);
