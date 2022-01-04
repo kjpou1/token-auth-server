@@ -1,4 +1,13 @@
 import {
+  authorize,
+  requestParametersValidator,
+  requestValidator,
+} from "../middlewares/middlewares.ts";
+import { UserSchema } from "../schemas/schemas.ts";
+import { UserService } from "../services/services.ts";
+import { Pagination } from "../types/filterandpagination/FilterAndPaginationTypes.ts";
+import { UserRole } from "../types/user/userTypes.ts";
+import {
   Bson,
   helpers,
   httpErrors,
@@ -6,15 +15,6 @@ import {
   RouterMiddleware,
 } from "../utils/deps.ts";
 import { createResponseUser } from "../utils/utils.ts";
-import { UserSchema } from "../schemas/schemas.ts";
-import { UserService } from "../services/services.ts";
-import { Pagination } from "../types/filterandpagination/FilterAndPaginationTypes.ts";
-import {
-  authorize,
-  requestParametersValidator,
-  requestValidator,
-} from "../middlewares/middlewares.ts";
-import { UserRole } from "../types/user/userTypes.ts";
 import { paginationValidationSchema } from "../validators/request-parameter-validations.ts";
 import { updateUserValidationSchema } from "../validators/request-validations.ts";
 
