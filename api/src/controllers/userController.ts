@@ -42,7 +42,12 @@ export const GetUsers: [
     });
 
     const usersCursor = await UserService.getUsers(pagination);
-    ctx.response.body = usersCursor;
+    ctx.response.body = {
+      code: "success",
+      status: 200,
+      message: "success",
+      details: usersCursor,
+    };
   },
 ];
 
@@ -64,10 +69,17 @@ export const GetUserById: [
       const userData = createResponseUser(
         await UserService.getUserById(new Bson.ObjectId(id)) as UserSchema,
       );
-      ctx.response.body = userData;
-    } else {
-      throw new httpErrors.NotFound("User not found");
+      if (userData) {
+        ctx.response.body = {
+          code: "success",
+          status: 200,
+          message: "success",
+          details: userData,
+        };
+        return;
+      }
     }
+    throw new httpErrors.NotFound("User not found");
   },
 ];
 
@@ -102,7 +114,12 @@ export const UpdateUserById: [
         const user = createResponseUser(
           updateUser,
         );
-        response.body = user;
+        ctx.response.body = {
+          code: "success",
+          status: 200,
+          message: "success",
+          details: userData,
+        };
         return;
       }
     }
@@ -128,6 +145,7 @@ export const DeleteUserById: [
     if (id) {
       const userData = await UserService.deleteById(new Bson.ObjectId(id));
       ctx.response.body = {
+        code: "success",
         status: 204,
         message: "success",
       };

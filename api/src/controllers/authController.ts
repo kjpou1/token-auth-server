@@ -169,7 +169,12 @@ export const Me: [
     const userData = createResponseUser(
       await UserService.getUserById(new Bson.ObjectId(user._id)) as UserSchema,
     );
-    response.body = userData;
+    response.body = {
+      code: "success",
+      status: 200,
+      message: "success",
+      details: userData,
+    };
   },
 ];
 
@@ -182,6 +187,7 @@ export const Logout: [
     log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
     cookies.delete(JWT_COOKIE_NAME);
     response.body = {
+      code: "success",
       status: 200,
       message: "success",
     };
