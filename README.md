@@ -16,9 +16,16 @@
 ---
 
 # Token Authentication Server
+Implementation of a Token-Based identity and authorization server.
+
+Key implementation details
+- Uses tokens to authenticate users.
+- Refresh Token Rotation implementation guaranting that every time an application exchanges a refresh token to get a new access token, a new refresh token is also returned.
+- Automatic Refresh Token reuse detection deactivating the user and marking the user record as compromised.
+- All tokens are given a expiration
+- Only the minimum needed information is kept in the token.
 
 ## Pre Requirements
----
 
 [Docker Compose](https://docs.docker.com/compose/install/) is used to execute the project and is described below.  [Docker Desktop](https://docs.docker.com/desktop/) includes [Compose](https://docs.docker.com/compose/install/) along with other Docker apps, so most users do not need to install Compose separately. 
 
