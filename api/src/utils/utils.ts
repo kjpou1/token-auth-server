@@ -1,7 +1,7 @@
-import { join, log, omit } from "./deps.ts";
-import { ResponseUser, UserRole } from "../types/user/userTypes.ts";
-import { UserSchema } from "../schemas/schemas.ts";
 import { config } from "../config/config.ts";
+import { UserSchema } from "../schemas/schemas.ts";
+import { ResponseUser, UserRole } from "../types/user/userTypes.ts";
+import { join, log, omit } from "./deps.ts";
 const { JWT_SECRET_FILE } = config;
 
 export async function getBannerText() {
@@ -30,11 +30,14 @@ export function ensureEnvironment() {
 }
 
 export function createResponseUser(user: UserSchema) {
-  const responseUser = omit(
-    user,
-    ["password"],
-  );
-  return responseUser;
+  if (user) {
+    const responseUser = omit(
+      user,
+      ["password"],
+    );
+    return responseUser;
+  }
+  return null;
 }
 
 export function createTokenPayload(user: UserSchema) {
