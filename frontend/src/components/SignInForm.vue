@@ -78,10 +78,6 @@ export default {
       signin_alert_msg: 'Please wait! We are signing you in.',
     };
   },
-  mounted() {
-    console.log('Hello all');
-    console.log(process.env);
-  },
   methods: {
     async signin(values) {
       try {
