@@ -8,7 +8,7 @@
      <img alt="GitHub license" src="https://img.shields.io/github/license/kjpou1/token-auth-server" />
    </a>
    <a href="https://deno.land">
-     <img src="https://img.shields.io/badge/deno-1.17.0-green?logo=deno"/>
+     <img src="https://img.shields.io/badge/deno-1.17.1-green?logo=deno"/>
    </a>
 
 </div>
@@ -17,117 +17,73 @@
 
 # Token Authentication Server
 
-## Quickstart
+## Pre Requirements
+---
 
-1. Use the [Drake](https://github.com/srackham/drake) task runner module to
-   build and test auth server library modules and CLIs for Deno.
+[Docker Compose](https://docs.docker.com/compose/install/) is used to execute the project and is described below.  [Docker Desktop](https://docs.docker.com/desktop/) includes [Compose](https://docs.docker.com/compose/install/) along with other Docker apps, so most users do not need to install Compose separately. 
 
-       deno run -A Drakefile.ts <Task>
+- ### Docker Desktop
 
-| Task            | Description                          |
-| --------------- | ------------------------------------ |
-| start           | Run API                              |
-| denon           | Run API via denon for development    |
-| mongodb         | Start mongodb server for development |
-| mongodb-stop    | Stop mongodb server for development  |
-| cache           | Cache and lock dependencies          |
-| denon-install   | Install denon for development        |
-| mongodb-install | Install mongodb for development      |
+  - [Install Docker Desktop on Mac](https://docs.docker.com/desktop/mac/install/)
 
-## Common error HTTP status codes include [HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status):
+  - [Install Docker Desktop on Windows](https://docs.docker.com/desktop/windows/install/)
 
-- 400 Bad Request – This means that client-side input fails validation.
-- 401 Unauthorized – This means the user isn’t not authorized to access a
-  resource. It usually returns when the user isn’t authenticated.
-- 403 Forbidden – This means the user is authenticated, but it’s not allowed to
-  access a resource.
-- 404 Not Found – This indicates that a resource is not found.
-- 500 Internal server error – This is a generic server error. It probably
-  shouldn’t be thrown explicitly.
-- 502
-  [Bad Gateway](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502) –
-  This indicates an invalid response from an upstream server.
-- 503 Service Unavailable – This indicates that something unexpected happened on
-  server side (It can be anything like server overload, some parts of the system
-  failed, etc.).
-
-### Forbidden, Unauthorized, or What Else?
-
-[Forbidden, Unauthorized, or What Else?](https://auth0.com/blog/forbidden-unauthorized-http-status-codes/)
-
-## Best practices
-
-- [Best practices for REST API design](https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/#h-accept-and-respond-with-json)
-- [RESTful web API design](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design)
-
-## HATEOAS
-
-[Use HATEOAS to enable navigation to related resources](https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#use-hateoas-to-enable-navigation-to-related-resources)
-
-## --unstable flag
-
-The unstable flag is needed now for using the
-[bcrypt library](https://github.com/JamesBroadberry/deno-bcrypt/issues/24)
-Review this once there is a new release.
-
-## Style Guide ✨
-
-https://github.com/basarat/typescript-book/blob/master/docs/styleguide/styleguide.md
-
-## JWT Handling
-
-[The Ultimate Guide to handling JWTs on frontend
-clients](https://hasura.io/blog/best-practices-of-using-jwt-with-graphql/#silent_refresh)
-
-[The Ultimate Guide to JWT server-side auth (with refresh tokens)](https://katifrantz.com/the-ultimate-guide-to-jwt-server-side-authentication-with-refresh-tokens)
-
-[OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps#section-8)
-
-[What Are Refresh Tokens and How to Use Them Securely](https://auth0.com/blog/refresh-tokens-what-are-they-and-when-to-use-them/)
-
-## CSRF
-
-https://deno.land/x/drash_middleware@v0.7.10/csrf
-https://en.wikipedia.org/wiki/Cross-site_request_forgery
-https://github.com/Octo8080/deno-csrf
-
-## Running from dockerfile
-
-If one really wants to run from `Dockerfile` then do the following:
-
-First start the database service from the compose file
-
-```
-docker-compose up --build api-mongo
-```
-
-Then the following but do not forget to replace the IP address for the mongo db.
-
-```
-cd api
-docker image build -t token-auth-server . && docker container run -it --init -p 3001:3001 -e URI=http://0.0.0.0:3001 --rm --name token-auth-server2 -v "$PWD:/api" -e MONGO_URL=mongodb://`{ Local HOST IP ADDRESS}`:27017 token-auth-server
-```
-
-```
-docker container exec -it `container-name` sh
-```
-
-## Docker compose commands
-
-# Rebuild
-
-```
-docker-compose down && docker-compose build
-```
-
-- or -
+- ### Clone this repository:
 
   ```
-  docker-compose up --build
+  $ git clone https://github.com/kjpou1/token-auth-server.git
+
+  $ cd token-auth-server
   ```
 
-Start the compose containers without building
+- ### Minimal Configuration:
+  Setup the default user seed information for api:
 
-```
-docker-compose up
-```
+  - First create the `.env` file
+
+    - Mac 
+      ```
+      $ cd api
+      $ touch .env
+      ```
+
+    - Windows
+      ```
+      cd api
+      copy .env+
+      ```
+  - Open and add the following configuration entries:
+
+    ``` bash
+    #===========================
+    ## Database seed information
+    #===========================
+
+    # The default name of the user
+    SEED_NAME=Admin
+    # The default email of the user
+    SEED_EMAIL=admin@example.com
+    # The default password of the seeded user
+    SEED_PASSWORD=
+    ```
+    :exclamation: <b><i>Note:</i> Make sure to provide a SEED_PASSWORD value or an error will be issued during startup</b> 
+
+
+
+
+## Quickstart - Running locally
+---
+
+Start up the [docker compose](https://docs.docker.com/compose/install/)file provided in the main directory.
+
+- ### Run interactively
+  ```
+  docker compose up --build
+  ```
+
+- ### Run in background task
+  ```
+  docker compose up -d --build
+  ```
+
+This may take a while on first run while everything is being downloaded, built and installed.
