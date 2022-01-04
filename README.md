@@ -16,6 +16,7 @@
 ---
 
 # Token Authentication Server
+
 Implementation of a Token-Based identity and authorization server.
 
 Key implementation details
@@ -79,9 +80,8 @@ Key implementation details
 
 
 ## Quickstart - Running locally
----
 
-Start up the [docker compose](https://docs.docker.com/compose/install/)file provided in the main directory.
+Start up the [docker compose](https://docs.docker.com/compose/install/) file provided in the main directory.
 
 - ### Run interactively
   ```
@@ -94,3 +94,13 @@ Start up the [docker compose](https://docs.docker.com/compose/install/)file prov
   ```
 
 This may take a while on first run while everything is being downloaded, built and installed.
+
+
+## Authentication Forms
+
+There are a couple of delivered forms that one can use.
+
+They use a redirect after a successful action.
+
+- Sign In with redirect - http://localhost:3002/signin
+- Register with redirect - http://localhost:3002/register
