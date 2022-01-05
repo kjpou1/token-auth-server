@@ -25,7 +25,11 @@ import {
   RouterContext,
   RouterMiddleware,
 } from "../utils/deps.ts";
-import { createResponseUser, createTokenPayload } from "../utils/utils.ts";
+import {
+  createResponseUser,
+  createTokenPayload,
+  setCookieInfo,
+} from "../utils/utils.ts";
 import { createUserValidationSchema } from "../validators/request-validations.ts";
 const {
   JWT_REFRESH_TOKEN_EXP,
@@ -128,10 +132,9 @@ async function setAuthResponse(
   // calculate the expiration date of the refresh token httpOnly Cookie
   const expd = new Date();
   expd.setTime(expd.getTime() + lifeTime * 1000);
-  await cookies.set(JWT_COOKIE_NAME, tokens.refreshToken ?? "", {
-    httpOnly: true,
-    expires: expd,
-  });
+
+  // set the cookie information.
+  await setCookieInfo(cookies, tokens.refreshToken, expd);
 
   const responseTokens: Record<string, string | undefined> = {};
   responseTokens[JWT_ACCESS_TOKEN_NAME] = tokens.accessToken;
@@ -263,10 +266,7 @@ export const TokenResult: [
           const refreshExpd = new Date();
           refreshExpd.setTime(refreshExpd.getTime() + lifeTime * 1000);
 
-          await cookies.set(JWT_COOKIE_NAME, tokenInfo.token ?? "", {
-            httpOnly: true,
-            expires: refreshExpd,
-          });
+          await setCookieInfo(cookies, tokenInfo.token, refreshExpd);
 
           const responseTokens: Record<string, string | undefined> = {};
           responseTokens[JWT_ACCESS_TOKEN_NAME] = tokenInfo.associatedToken;

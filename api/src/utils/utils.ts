@@ -1,8 +1,8 @@
 import { config } from "../config/config.ts";
 import { UserSchema } from "../schemas/schemas.ts";
 import { ResponseUser, UserRole } from "../types/user/userTypes.ts";
-import { join, log, omit } from "./deps.ts";
-const { JWT_SECRET_FILE } = config;
+import { Cookies, join, log, omit } from "./deps.ts";
+const { JWT_SECRET_FILE, JWT_COOKIE_NAME } = config;
 
 export async function getBannerText() {
   const path = join("data", "banner.txt");
@@ -68,3 +68,15 @@ export const isInRole = (
 
   return isRoleMatched;
 };
+
+export async function setCookieInfo(
+  cookies: Cookies,
+  token: string | undefined,
+  expires: Date,
+) {
+  await cookies.set(JWT_COOKIE_NAME, token ?? "", {
+    httpOnly: true,
+    secure: JSON.parse(Deno.env.get("location") ?? "{}").secure ?? false,
+    expires: expires,
+  });
+}
