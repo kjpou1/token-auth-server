@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import { combineURLs } from '@/helpers';
+import AuthService from '@/services/authService';
 
 export default createStore({
   state: {
@@ -58,7 +59,7 @@ export default createStore({
   },
   actions: {
     signInRedirect({ state }) {
-      const redirectTo = combineURLs(process.env.VUE_APP_SIGNIN_REDIRECT, state.signInRequestId);
+      const redirectTo = combineURLs(process.env.VUE_APP_SIGNIN_REDIRECT, `?requestId=${state.signInRequestId}`);
       window.location.href = redirectTo;
     },
     registerRedirect() {
@@ -66,24 +67,12 @@ export default createStore({
       window.location.href = redirectTo;
     },
     async register({ commit }, payload) {
-      console.log(payload);
       commit('setRegistrationError', null);
       commit('toggleRegistering');
-      const response = await fetch('http://localhost:3001/api/v1/register', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify({
-          name: payload.name,
-          email: payload.email,
-          password: payload.password,
-          roles: ['User', 'Admin'],
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
-      const registerResponse = await response.json();
-      console.log(registerResponse);
+
+      // Call service function to process register request
+      const registerResponse = await AuthService.register(payload);
+
       if (registerResponse?.status === 200) {
         commit('toggleRegistration');
       } else {
@@ -92,22 +81,11 @@ export default createStore({
       commit('toggleRegistering');
     },
     async signIn({ commit }, payload) {
-      console.log(payload);
       commit('setSignInError', null);
       commit('toggleSigningIn');
-      const response = await fetch('http://localhost:3001/api/v1/login', {
-        method: 'POST',
-        credentials: 'include',
-        body: JSON.stringify({
-          email: payload.email,
-          password: payload.password,
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
-      });
-      const signInResponse = await response.json();
-      console.log(signInResponse);
+
+      // Call service function to process sign in request
+      const signInResponse = await AuthService.signIn(payload);
       if (signInResponse?.status === 200) {
         commit('setSignInRequestId', signInResponse.details?.jti);
         commit('toggleAuth');
