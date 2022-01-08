@@ -13,7 +13,12 @@ export class UserService {
   /**
    * get user by user id
    */
-  static async getUserById(_id: Bson.ObjectId): Promise<UserSchema | null> {
+  static async getUserById(
+    _id: Bson.ObjectId | string,
+  ): Promise<UserSchema | null> {
+    if (typeof _id === "string") {
+      _id = new Bson.ObjectId(_id);
+    }
     const user = await repository.find(_id);
     return user;
   }
