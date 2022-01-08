@@ -223,7 +223,6 @@ export const Token: [
       }
       if (refreshToken.sub) {
         const user = JSON.parse(refreshToken.sub) as UserSchema;
-        console.log(refreshToken);
         await TokenService.expireCurrentToken(refreshToken.jti);
         await TokenRequestService.removeTokenRequestInformation(
           refreshToken.jti,
