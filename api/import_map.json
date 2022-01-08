@@ -12,5 +12,7 @@
     "bcrypt": "https://deno.land/x/bcrypt@v0.2.4/mod.ts",
     "validasaur": "https://deno.land/x/validasaur@v0.15.0/mod.ts",
     "password_checker": "https://deno.land/x/password_checker@v1.0.0/mod.ts"
+    "password_checker": "https://deno.land/x/password_checker@v1.0.0/mod.ts",
+    "uuid": "https://deno.land/std@0.119.0/uuid/mod.ts",
   }
 }
