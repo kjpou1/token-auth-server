@@ -2,4 +2,6 @@
 export type ResetRequest = {
   /** user email */
   email: string;
+  /** reset URL */
+  resetURL: string;
 };

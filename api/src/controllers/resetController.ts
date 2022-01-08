@@ -1,15 +1,23 @@
-import { helpers, httpErrors } from "../utils/deps.ts";
-import { RouterContext, RouterMiddleware } from "../utils/deps.ts";
-import { ResetService, UserService } from "../services/services.ts";
 import { requestValidator } from "../middlewares/middlewares.ts";
 import {
-  resetRequestValidationSchema,
-  resetValidationSchema,
-} from "../validators/request-validations.ts";
+  MailerService,
+  ResetService,
+  UserService,
+} from "../services/services.ts";
 import {
   ResetConfirmation,
   ResetRequest,
 } from "../types/reset/resetPasswordTypes.ts";
+import {
+  helpers,
+  httpErrors,
+  RouterContext,
+  RouterMiddleware,
+} from "../utils/deps.ts";
+import {
+  resetRequestValidationSchema,
+  resetValidationSchema,
+} from "../validators/request-validations.ts";
 
 export const RequestReset: [
   RouterMiddleware<"">,
@@ -21,24 +29,26 @@ export const RequestReset: [
   async (
     { request, response }: RouterContext<"request_reset">,
   ) => {
+    // receive the request reset
     const requestResetData = await request.body().value as ResetRequest;
 
     const resetInformation = await ResetService.createResetRequest(
       requestResetData,
     );
 
-    const subject = "Reset Your Password";
-
-    const location = JSON.parse(Deno.env.get("location") ?? "{}");
-    const url = `${location.href}/reset/${resetInformation.token}`;
-    const content = `Click <a href="${url}" >here</a> to reset your password!`;
-
-    //await Mailer.send(email, subject, content);
+    const content = MailerService.sendResetRequest(
+      resetInformation,
+      requestResetData,
+    );
 
     response.body = {
+      code: "success",
       status: 200,
-      message: "Check your email",
-      content: content,
+      message: "success",
+      details: {
+        content,
+        requestToken: resetInformation.token,
+      },
     };
   },
 ];
