@@ -58,14 +58,14 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
 app.use(
   oakCors({
     credentials: true,
-    origin: /^.+localhost:(3002|4200|8080)$/,
+    origin: /^.+localhost:(3002|3008|8080)$/,
   }),
 );
 
 app.use(middlewares.setContentType);
-app.use(middlewares.timingMiddleware);
 app.use(middlewares.errorMiddleware);
 app.use(middlewares.loggerMiddleware);
+app.use(middlewares.timingMiddleware);
 app.use(middlewares.bearerAuthMiddleware);
 app.use(middlewares.httpOnlyCookieAuthMiddleware);
 
