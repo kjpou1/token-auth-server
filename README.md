@@ -1,15 +1,28 @@
-<a href="">
-     <img alt="Active" src="https://img.shields.io/badge/status-early%20development-orange?">
-   </a>
-   <a href="https://github.com/kjpou1/token-auth-server/stargazers">
-     <img alt="GitHub stars" src="https://img.shields.io/github/stars/kjpou1/token-auth-server">
-   </a>
-   <a href="">
-     <img alt="GitHub license" src="https://img.shields.io/github/license/kjpou1/token-auth-server" />
-   </a>
-   <a href="https://deno.land">
-     <img src="https://img.shields.io/badge/deno-1.17.1-green?logo=deno"/>
-   </a>
+<div>
+  <a href="">
+    <img alt="Active" src="https://img.shields.io/badge/status-early%20development-orange?">
+  </a>
+  <a href="https://github.com/kjpou1/token-auth-server/stargazers">
+    <img alt="GitHub stars" src="https://img.shields.io/github/stars/kjpou1/token-auth-server">
+  </a>
+  <a href="">
+    <img alt="GitHub license" src="https://img.shields.io/github/license/kjpou1/token-auth-server" />
+  </a>
+  </br>
+  <a href="https://deno.land">
+    <img src="https://img.shields.io/badge/deno-1.17.1-green?logo=deno"/>
+  </a>
+  </br>
+  <a href="https://deno.land/x/redis@v0.25.1">
+    <img src="https://img.shields.io/badge/redis-0.25.1-green?logo=redis"/>
+  </a>   
+  <a href="https://deno.land/x/mongo@v0.29.0">
+    <img src="https://img.shields.io/badge/MongoDB-0.29.0-green?logo=mongodb&logoColor=white"/>
+  </a>
+  </br>
+  <a href="https://github.com/vuejs/vue">
+    <img src="https://img.shields.io/badge/Vue.js-3-green?&logoColor=4FC08D"/>
+  </a>  
 
 </div>
 
