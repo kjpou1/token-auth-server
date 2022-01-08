@@ -1,8 +1,7 @@
-import { Bson } from "../utils/deps.ts";
-import { EncryptionService } from "./services.ts";
 import { ResetRepository } from "../repositories/repositories.ts";
-import { ResetRequest } from "../types/reset/resetPasswordTypes.ts";
 import { ResetSchema } from "../schemas/schemas.ts";
+import { ResetRequest } from "../types/reset/resetPasswordTypes.ts";
+import { Bson } from "../utils/deps.ts";
 
 const repository = new ResetRepository();
 
