@@ -68,7 +68,6 @@ export class TokenService {
       createdOn: new Date(),
     } as TokenEntryCreate;
     const entity = await repository.create(tokenEntity);
-
     return accessToken;
   }
 
@@ -117,7 +116,7 @@ export class TokenService {
     subject: Record<string, string | Bson.ObjectId | [UserRole]>,
     lifeTime: number,
     accessToken: string,
-  ): Promise<string> {
+  ): Promise<Record<string, string>> {
     const refreshPayload: RefreshToken = {
       sub: JSON.stringify(subject),
       exp: this.createExpirationDate(lifeTime),
@@ -143,7 +142,7 @@ export class TokenService {
       createdOn: new Date(),
     } as TokenEntryCreate;
     const entity = await repository.create(tokenEntity);
-    return refreshToken;
+    return { refreshToken, jti: tokenEntity.jti };
   }
 
   static async createTokens(
@@ -186,11 +185,14 @@ export class TokenService {
     ));
     const createdTokens: CreateTokens = {} as CreateTokens;
     createdTokens.accessToken = await this.createAccessToken(subject);
-    createdTokens.refreshToken = await this.rotateRefreshToken(
+
+    const refreshTokenInfo = await this.rotateRefreshToken(
       subject,
       lifeTime,
       createdTokens.accessToken,
     );
+    createdTokens.refreshToken = refreshTokenInfo.refreshToken;
+    createdTokens.jti = refreshTokenInfo.jti;
 
     return createdTokens;
   }
