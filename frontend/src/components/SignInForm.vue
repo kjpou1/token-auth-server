@@ -120,7 +120,6 @@ export default {
         this.reg_alert_variant = 'bg-red-500';
         this.reg_alert_msg = 'An unexpected error occured while trying to redirect.  Please try again later.';
       }
-      console.log(`request id: ${this.$store.state.signInRequestId}`);
     },
     isSignInError() {
       this.signin_alert_msg = this.getSignInErrorMessage;

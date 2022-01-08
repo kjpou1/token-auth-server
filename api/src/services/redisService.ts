@@ -12,13 +12,11 @@ export class RedisService {
     requestInformation: string,
   ) {
     await redisClient.set(id, requestInformation);
-    console.log(await redisClient.get(id));
   }
 
   static async retrieveTokenRequestInformation(
     id: string,
   ): Promise<string> {
     return await redisClient.get(id) as string;
-    //console.log(await redisClient.get(id));
   }
 }
