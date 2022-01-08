@@ -26,3 +26,4 @@ export * as dotenv from "dotenv";
 export * as validasaur from "validasaur";
 export { checkPasswordWithResult } from "password_checker";
 export { v4 } from "https://deno.land/std@0.119.0/uuid/mod.ts";
+export { connect as redisConnect } from "redis";
