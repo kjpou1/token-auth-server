@@ -1,7 +1,12 @@
 // Standard library dependencies
-export * as log from "log";
-export { join } from "path";
+export * as bcrypt from "bcrypt";
+export { oakCors } from "CORS";
+export * as djwt from "djwt";
+export * as dotenv from "dotenv";
 export { BufReader } from "io";
+export { isEmpty, omit } from "lodash";
+export * as log from "log";
+export { Bson, Collection, Database, MongoClient } from "mongodb";
 // Third party dependencies
 export {
   Application,
@@ -17,13 +22,8 @@ export {
   Status,
 } from "oak";
 export type { RouteParams, RouterContext, RouterMiddleware } from "oak";
-export { isEmpty, omit } from "lodash";
-export { Bson, Collection, Database, MongoClient } from "mongodb";
-export * as bcrypt from "bcrypt";
-export * as djwt from "djwt";
-export { oakCors } from "CORS";
-export * as dotenv from "dotenv";
-export * as validasaur from "validasaur";
 export { checkPasswordWithResult } from "password_checker";
-export { v4 } from "https://deno.land/std@0.119.0/uuid/mod.ts";
+export { join } from "path";
 export { connect as redisConnect } from "redis";
+export { v4 } from "uuid";
+export * as validasaur from "validasaur";
