@@ -3,6 +3,7 @@ import { authorize, requestValidator } from "../middlewares/middlewares.ts";
 import { UserSchema } from "../schemas/schemas.ts";
 import {
   EncryptionService,
+  RedisService,
   TokenService,
   UserService,
 } from "../services/services.ts";
@@ -116,7 +117,6 @@ async function setAuthResponse(
       createTokenPayload(user),
       refreshToken,
     ) as CreateTokens;
-
     // Calculate the new cookie lifetime based off of the rotated refresh token
     // expiration date.
     lifeTime = Math.floor(Math.abs(
@@ -147,6 +147,13 @@ async function setAuthResponse(
     expiresIn: Number(JWT_ACCESS_TOKEN_EXP),
     user: createResponseUser(user),
   };
+
+  if (tokens.jti) {
+    RedisService.persistTokenRequestInformation(
+      tokens.jti,
+      JSON.stringify(loginResponse),
+    );
+  }
 
   response.body = {
     code: "success",
@@ -235,19 +242,28 @@ export const TokenResult: [
   ) => {
     const { response, request, cookies } = ctx;
 
-    /** get user id from params */
+    /** get token request id from params */
     const { resultId } = helpers.getQuery(ctx, { mergeParams: true });
     if (resultId) {
-      const tokenInfo = await TokenService.getTokenResult(resultId);
-      if (tokenInfo?.expiresOn) {
+      const redisEntry = await RedisService.retrieveTokenRequestInformation(
+        resultId,
+      );
+
+      const redisInfo = JSON.parse(redisEntry) as LoginUserResponse;
+      const refreshTokenInfo = redisInfo[JWT_REFRESH_TOKEN_NAME] as string;
+      const redisTokenInfo = await TokenService.getJwtPayload(
+        refreshTokenInfo,
+      );
+
+      if (redisTokenInfo?.exp) {
         let accessTokenlifeTime = 0;
-        let lifeTime = 0;
 
         const accessToken = await TokenService.getJwtPayload(
-          tokenInfo.associatedToken ?? "",
+          redisInfo[JWT_ACCESS_TOKEN_NAME] as string,
         );
+
         if (accessToken?.exp) {
-          // Calculate the new cookie lifetime based off of the access token
+          // Calculate the remaining lifetime based off of the access token
           // expiration date.
           accessTokenlifeTime = Math.floor(Math.abs(
             (new Date().getTime() -
@@ -255,48 +271,26 @@ export const TokenResult: [
               1000,
           ));
 
-          // Calculate the new cookie lifetime based off of the access token
+          redisInfo.expiresIn = accessTokenlifeTime;
+
+          // Calculate the cookie expire date based off of the refresh token
           // expiration date.
-          const lifeTime = Math.round(Math.abs(
-            (new Date().getTime() - tokenInfo.expiresOn.getTime()) /
-              1000,
-          ));
+          const redisInfoExpiresOn = new Date(redisTokenInfo.exp);
+          redisInfoExpiresOn.setTime(redisInfoExpiresOn.getTime() * 1000);
 
-          // calculate the expiration date of the refresh token httpOnly Cookie
-          const refreshExpd = new Date();
-          refreshExpd.setTime(refreshExpd.getTime() + lifeTime * 1000);
+          await setCookieInfo(
+            cookies,
+            refreshTokenInfo,
+            redisInfoExpiresOn,
+          );
 
-          await setCookieInfo(cookies, tokenInfo.token, refreshExpd);
-
-          const responseTokens: Record<string, string | undefined> = {};
-          responseTokens[JWT_ACCESS_TOKEN_NAME] = tokenInfo.associatedToken;
-          responseTokens[JWT_REFRESH_TOKEN_NAME] = tokenInfo.token;
-
-          const user: UserSchema = await UserService.getUserById(
-            tokenInfo.userId,
-          ) as UserSchema;
-
-          if (user) {
-            const loginResponse: LoginUserResponse = {
-              ...responseTokens,
-              jti: resultId,
-              tokenType: AUTH_TOKEN_TYPE,
-              expiresIn: accessTokenlifeTime,
-              user: createResponseUser(user),
-            };
-
-            response.body = {
-              code: "success",
-              status: 200,
-              message: "success",
-              details: loginResponse,
-            };
-            return;
-          } else {
-            log.debug(
-              `user id associated with token was not found: ${tokenInfo.userId} `,
-            );
-          }
+          response.body = {
+            code: "success",
+            status: 200,
+            message: "success",
+            details: redisInfo,
+          };
+          return;
         } else {
           log.debug(
             `Access token associated with request is invalid or expired: ${resultId} `,
