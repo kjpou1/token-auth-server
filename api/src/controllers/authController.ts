@@ -3,7 +3,7 @@ import { authorize, requestValidator } from "../middlewares/middlewares.ts";
 import { UserSchema } from "../schemas/schemas.ts";
 import {
   EncryptionService,
-  RedisService,
+  TokenRequestService,
   TokenService,
   UserService,
 } from "../services/services.ts";
@@ -149,7 +149,7 @@ async function setAuthResponse(
   };
 
   if (tokens.jti) {
-    RedisService.persistTokenRequestInformation(
+    TokenRequestService.persistTokenRequestInformation(
       tokens.jti,
       JSON.stringify(loginResponse),
     );
@@ -223,7 +223,11 @@ export const Token: [
       }
       if (refreshToken.sub) {
         const user = JSON.parse(refreshToken.sub) as UserSchema;
-        await TokenService.expireCurrentToken(state.jti);
+        console.log(refreshToken);
+        await TokenService.expireCurrentToken(refreshToken.jti);
+        await TokenRequestService.removeTokenRequestInformation(
+          refreshToken.jti,
+        );
         await setAuthResponse(response, cookies, user, refreshToken);
       }
     } else {
@@ -245,57 +249,62 @@ export const TokenResult: [
     /** get token request id from params */
     const { resultId } = helpers.getQuery(ctx, { mergeParams: true });
     if (resultId) {
-      const redisEntry = await RedisService.retrieveTokenRequestInformation(
-        resultId,
-      );
-
-      const redisInfo = JSON.parse(redisEntry) as LoginUserResponse;
-      const refreshTokenInfo = redisInfo[JWT_REFRESH_TOKEN_NAME] as string;
-      const redisTokenInfo = await TokenService.getJwtPayload(
-        refreshTokenInfo,
-      );
-
-      if (redisTokenInfo?.exp) {
-        let accessTokenlifeTime = 0;
-
-        const accessToken = await TokenService.getJwtPayload(
-          redisInfo[JWT_ACCESS_TOKEN_NAME] as string,
+      const requestEntry = await TokenRequestService
+        .retrieveTokenRequestInformation(
+          resultId,
         );
 
-        if (accessToken?.exp) {
-          // Calculate the remaining lifetime based off of the access token
-          // expiration date.
-          accessTokenlifeTime = Math.floor(Math.abs(
-            (new Date().getTime() -
-              new Date(accessToken.exp * 1000).getTime()) /
-              1000,
-          ));
+      if (requestEntry) {
+        const requestInfo = JSON.parse(requestEntry) as LoginUserResponse;
+        const refreshTokenInfo = requestInfo[JWT_REFRESH_TOKEN_NAME] as string;
+        const requestTokenInfo = await TokenService.getJwtPayload(
+          refreshTokenInfo,
+        );
 
-          redisInfo.expiresIn = accessTokenlifeTime;
+        if (requestTokenInfo?.exp) {
+          let accessTokenlifeTime = 0;
 
-          // Calculate the cookie expire date based off of the refresh token
-          // expiration date.
-          const redisInfoExpiresOn = new Date(redisTokenInfo.exp);
-          redisInfoExpiresOn.setTime(redisInfoExpiresOn.getTime() * 1000);
-
-          await setCookieInfo(
-            cookies,
-            refreshTokenInfo,
-            redisInfoExpiresOn,
+          const accessToken = await TokenService.getJwtPayload(
+            requestInfo[JWT_ACCESS_TOKEN_NAME] as string,
           );
 
-          response.body = {
-            code: "success",
-            status: 200,
-            message: "success",
-            details: redisInfo,
-          };
-          return;
-        } else {
-          log.debug(
-            `Access token associated with request is invalid or expired: ${resultId} `,
-          );
+          if (accessToken?.exp) {
+            // Calculate the remaining lifetime based off of the access token
+            // expiration date.
+            accessTokenlifeTime = Math.floor(Math.abs(
+              (new Date().getTime() -
+                new Date(accessToken.exp * 1000).getTime()) /
+                1000,
+            ));
+
+            requestInfo.expiresIn = accessTokenlifeTime;
+
+            // Calculate the cookie expire date based off of the refresh token
+            // expiration date.
+            const requestInfoExpiresOn = new Date(requestTokenInfo.exp);
+            requestInfoExpiresOn.setTime(requestInfoExpiresOn.getTime() * 1000);
+
+            await setCookieInfo(
+              cookies,
+              refreshTokenInfo,
+              requestInfoExpiresOn,
+            );
+
+            response.body = {
+              code: "success",
+              status: 200,
+              message: "success",
+              details: requestInfo,
+            };
+            return;
+          } else {
+            log.debug(
+              `Access token associated with request is invalid or expired: ${resultId} `,
+            );
+          }
         }
+      } else {
+        log.debug(`Could not find request for token id: ${resultId} `);
       }
       log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
       cookies.delete(JWT_COOKIE_NAME);
