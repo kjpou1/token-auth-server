@@ -27,6 +27,7 @@ import {
   RouterMiddleware,
 } from "../utils/deps.ts";
 import {
+  cleanUpRefreshToken,
   createResponseUser,
   createTokenPayload,
   setCookieInfo,
@@ -191,11 +192,11 @@ export const Me: [
 export const Logout: [
   RouterMiddleware<"logout">,
 ] = [
-  (
-    { response, cookies }: RouterContext<"logout">,
+  async (
+    { response, cookies, state }: RouterContext<"logout">,
   ) => {
     log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
-    cookies.delete(JWT_COOKIE_NAME);
+    cleanUpRefreshToken(cookies, state.refreshToken as RefreshToken);
     response.body = {
       code: "success",
       status: 200,
@@ -231,7 +232,7 @@ export const Token: [
       }
     } else {
       log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
-      cookies.delete(JWT_COOKIE_NAME);
+      cleanUpRefreshToken(cookies, refreshToken);
       throw new httpErrors.Unauthorized("Refresh token is invalid or expired.");
     }
   },
@@ -243,7 +244,7 @@ export const TokenResult: [
   async (
     ctx: RouterContext<"token/:resultId">,
   ) => {
-    const { response, request, cookies } = ctx;
+    const { response, cookies, state } = ctx;
 
     /** get token request id from params */
     const { resultId } = helpers.getQuery(ctx, { mergeParams: true });
@@ -306,7 +307,7 @@ export const TokenResult: [
         log.debug(`Could not find request for token id: ${resultId} `);
       }
       log.debug(`Logging out and deleting cookie: ${JWT_COOKIE_NAME} `);
-      cookies.delete(JWT_COOKIE_NAME);
+      cleanUpRefreshToken(cookies, state.refreshToken as RefreshToken);
       throw new httpErrors.BadRequest(
         "Token result request is invalid or expired.",
       );

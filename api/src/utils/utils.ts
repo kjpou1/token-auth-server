@@ -1,5 +1,7 @@
 import { config } from "../config/config.ts";
 import { UserSchema } from "../schemas/schemas.ts";
+import { TokenRequestService, TokenService } from "../services/services.ts";
+import { RefreshToken } from "../types/authentication/tokenTypes.ts";
 import { ResponseUser, UserRole } from "../types/user/userTypes.ts";
 import { Cookies, join, log, omit } from "./deps.ts";
 const { JWT_SECRET_FILE, JWT_COOKIE_NAME } = config;
@@ -79,4 +81,18 @@ export async function setCookieInfo(
     secure: JSON.parse(Deno.env.get("location") ?? "{}").secure ?? false,
     expires: expires,
   });
+}
+
+export async function cleanUpRefreshToken(
+  cookies: Cookies,
+  refreshToken: RefreshToken | undefined,
+) {
+  if (refreshToken) {
+    log.debug(`Cleaning up refresh token: ${refreshToken.jti} `);
+    await TokenService.expireCurrentToken(refreshToken.jti);
+    await TokenRequestService.removeTokenRequestInformation(
+      refreshToken.jti,
+    );
+  }
+  cookies.delete(JWT_COOKIE_NAME);
 }
