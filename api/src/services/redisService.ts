@@ -1,12 +1,30 @@
 import { config } from "../config/config.ts";
-import { redisConnect } from "../utils/deps.ts";
-const { REDIS_URI } = config;
-
-// setup Redis:
-const { hostname, port } = new URL(REDIS_URI);
-const redisClient = await redisConnect({ hostname, port });
+import { Redis, redisConnect } from "../utils/deps.ts";
 
 export class RedisService {
+  private static instance: RedisService;
+  redisClient: Redis = {} as Redis;
+
+  private constructor() {
+    // do something construct...
+  }
+  static async getInstance() {
+    if (!RedisService.instance) {
+      RedisService.instance = new RedisService();
+      // ... any one time initialization goes here ...
+      const { hostname, port } = new URL(config.REDIS_URI);
+      RedisService.instance.redisClient = await redisConnect({
+        hostname,
+        port,
+      });
+    }
+    return RedisService.instance;
+  }
+
+  get RedisClient() {
+    return this.redisClient;
+  }
+
   /**
    * Persist the information corresponding to the id as the key
    * @param id The key for the value to be set
@@ -16,7 +34,7 @@ export class RedisService {
     id: string,
     requestInformation: string,
   ) {
-    await redisClient.set(id, requestInformation);
+    await (await this.getInstance()).RedisClient.set(id, requestInformation);
   }
 
   /**
@@ -28,7 +46,7 @@ export class RedisService {
     id: string,
   ): Promise<string> {
     //console.log(await redisClient.keys("*"));
-    return await redisClient.get(id) as string;
+    return await (await this.getInstance()).RedisClient.get(id) as string;
   }
 
   /**
@@ -39,6 +57,6 @@ export class RedisService {
   static async removeTokenRequestInformation(
     id: string,
   ): Promise<number> {
-    return await redisClient.del(id);
+    return await (await this.getInstance()).RedisClient.del(id);
   }
 }
