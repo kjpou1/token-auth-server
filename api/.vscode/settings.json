@@ -3,6 +3,11 @@
   "deno.lint": true,
   "deno.unstable": false,
   "deno.importMap": "./import_map.json",
+  "deno.codeLens.testArgs": [
+    "--allow-all",
+    "--import-map=import_map.json",
+    "--unstable"
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll": true,
     "source.organizeImports": true

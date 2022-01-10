@@ -13,6 +13,8 @@
     "validasaur": "https://deno.land/x/validasaur@v0.15.0/mod.ts",
     "password_checker": "https://deno.land/x/password_checker@v1.0.0/mod.ts",
     "uuid": "https://deno.land/std@0.119.0/uuid/mod.ts",
-    "redis": "https://deno.land/x/redis@v0.25.1/mod.ts"
+    "redis": "https://deno.land/x/redis@v0.25.1/mod.ts",
+    "superoak": "https://deno.land/x/superoak@4.6.0/mod.ts",
+    "asserts": "https://deno.land/std@0.120.0/testing/asserts.ts"
   }
 }
