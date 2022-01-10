@@ -25,5 +25,6 @@ export type { RouteParams, RouterContext, RouterMiddleware } from "oak";
 export { checkPasswordWithResult } from "password_checker";
 export { join } from "path";
 export { connect as redisConnect } from "redis";
+export type { Redis } from "redis";
 export { v4 } from "uuid";
 export * as validasaur from "validasaur";
