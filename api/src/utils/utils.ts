@@ -87,6 +87,7 @@ export async function cleanUpRefreshToken(
   cookies: Cookies,
   refreshToken: RefreshToken | undefined,
 ) {
+  cookies.delete(JWT_COOKIE_NAME);
   if (refreshToken) {
     log.debug(`Cleaning up refresh token: ${refreshToken.jti} `);
     await TokenService.expireCurrentToken(refreshToken.jti);
@@ -94,5 +95,4 @@ export async function cleanUpRefreshToken(
       refreshToken.jti,
     );
   }
-  cookies.delete(JWT_COOKIE_NAME);
 }
