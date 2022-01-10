@@ -1,14 +1,14 @@
-import { Bson, Collection } from "../utils/deps.ts";
 import MongoDatabase from "../database/mongoDatabase.ts";
 import { Pagination } from "../types/filterandpagination/FilterAndPaginationTypes.ts";
+import { Bson, Collection, isEmpty } from "../utils/deps.ts";
 
 export abstract class Repository {
   // What concrete classes should override and implement
   abstract get collectionName(): string;
-  abstract repositoryCollection(): Collection<any>;
+  abstract repositoryCollection(): Promise<Collection<any>>;
 
   // private static variables
-  private static _dataBase = {} as MongoDatabase;
+  private static _dataBase: MongoDatabase;
 
   constructor() {
     this.dataBase = MongoDatabase.getInstance();
@@ -16,6 +16,9 @@ export abstract class Repository {
 
   // properties
   get dataBase(): MongoDatabase {
+    if (isEmpty(Repository._dataBase)) {
+      Repository._dataBase = MongoDatabase.getInstance();
+    }
     return Repository._dataBase;
   }
   set dataBase(db: MongoDatabase) {
