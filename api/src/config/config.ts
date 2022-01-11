@@ -4,6 +4,8 @@ export const config = loadConfig();
 export function loadConfig(
   env = "development",
 ): Record<string, string> {
+  // Check if there is an override
+  env = Deno.env.get("DENO_ENV") ?? env;
   const configOptions = {
     path: `.env.${env}`,
     export: true,
