@@ -12,11 +12,6 @@ class MongoDatabase {
   private DB_NAME: string;
   constructor() {
     // First check for environment override parameters
-    const {
-      MONGODB_URI,
-      MONGODB_DATABASE_NAME,
-    } = config;
-
     this.MONGO_URI = config.MONGODB_URI;
     this.DB_NAME = config.MONGODB_DATABASE_NAME;
     const mongoClient = new MongoClient();
