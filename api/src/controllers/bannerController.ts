@@ -7,4 +7,6 @@ export const Banner = async (
   const authText = await getBannerText();
   response.body = `${authText}
     Authentication server`;
+  // override the "Content-Type"
+  response.headers.set("Content-Type", "application/text");
 };
