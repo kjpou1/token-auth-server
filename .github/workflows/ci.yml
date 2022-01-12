@@ -1,0 +1,80 @@
+name: CI
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]    
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest] # [macos-latest, ubuntu-latest, windows-latest]
+        deno_version: [1.17.1, 1.17.2]
+    runs-on: ${{ matrix.os }}
+    env:
+      working_directory: ./api
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - name: cache deno installation and deno.land dependencies
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-deno-${{ hashFiles('**/*') }}
+          restore-keys: ${{ runner.os }}-deno-
+          path: |
+            /home/runner/.deno
+            /home/runner/.cache/deno/deps/https/deno.land      
+      - name: Use Deno Version ${{ matrix.deno_version }}
+        uses: denolib/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.deno_version }}
+      - name: Check formatting
+        run: |
+          cd api
+          deno fmt --check
+      - name: Cache files
+        run: |
+          cd api
+          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache-reload
+        working-directory: ${{env.working-directory}}
+        env:
+          DENO_ENV: CI
+      - name: Run tests          
+        run: |
+          cd api
+          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts test
+        working-directory: ${{env.working-directory}}
+        env:
+          DENO_ENV: test
+      - name: Check lock file
+        continue-on-error: true
+        run: |
+          cd api
+          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
+          cat lock.json          
+      - name: Build / Bundle Project
+        # This happens when the pull request has been approved
+        if: github.event_name == 'push'  
+        run: |
+          cd api
+          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts bundle
+      - name: Upload bundle folder
+        # This happens when the pull request has been approved
+        if: github.event_name == 'push'  
+        uses: actions/upload-artifact@v2
+        with:
+          name: bundle
+          path: api/bundle/token-auth-server.bundle.js
+      - name: Create a Release
+        if: github.event_name == 'push' && github.ref == 'ref/heads/main'
+        run: |
+          cd api
+          echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
+      - name: Deploy to Staging
+        if: github.event_name == 'push' && github.ref == 'ref/heads/develop'
+        run: |
+          cd api
+          echo 'Placeholder for sending to staging - Left Blank on Purpose'
+
+
+
