@@ -58,3 +58,10 @@ jobs:
         run: |
           cd api
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts bundle
+      - name: Upload bundle folder
+        # This happens when the pull request has been approved
+        if: github.event_name == 'push'  
+        uses: actions/upload-artifact@v2
+        with:
+          name: bundle
+          path: api/bundle/token-auth-server.bundle.js
