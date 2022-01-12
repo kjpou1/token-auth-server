@@ -34,7 +34,9 @@ jobs:
         run: |
           cd api
           deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
-        working-directory: ${{env.working-directory}}          
+        working-directory: ${{env.working-directory}}
+        env:
+          DENO_ENV: CI
       - name: Test the api
         run: |
           cd api
