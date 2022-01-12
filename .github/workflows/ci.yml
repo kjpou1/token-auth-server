@@ -16,16 +16,26 @@ jobs:
       working_directory: ./api
     steps:
       - uses: actions/checkout@v2.4.0
+      - name: cache deno installation and deno.land dependencies
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-deno-${{ hashFiles('**/*') }}
+          restore-keys: ${{ runner.os }}-deno-
+          path: |
+            /home/runner/.deno
+            /home/runner/.cache/deno/deps/https/deno.land      
       - name: Use Deno Version ${{ matrix.deno_version }}
         uses: denolib/setup-deno@v2
         with:
           deno-version: ${{ matrix.deno_version }}
-      # - name: Lint Deno Module
-      #   run: deno fmt --check
+      - name: Check formatting
+        run: |
+          cd api
+          deno fmt --check
       - name: Cache files
         run: |
           cd api
-          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
+          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache-reload
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: CI
@@ -36,6 +46,15 @@ jobs:
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
+      - name: check lock file
+        continue-on-error: true
+        run: |
+          cd api
+          if [[ -f lock.json ]]; then
+            DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cached-only
+          fi
+          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
+          cat lock.json          
       - name: Build / Bundle Project
         # This happens when the pull request has been approved
         if: github.event_name == 'push'  
