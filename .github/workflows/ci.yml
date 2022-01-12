@@ -16,7 +16,7 @@ jobs:
           pwd
           ls -a
       - name: Git Checkout Deno Module
-      - uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v2.4.0
       - name: List Files After checkout
         run: |
           pwd
