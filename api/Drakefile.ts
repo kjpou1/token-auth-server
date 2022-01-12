@@ -7,17 +7,9 @@ task("help", [], function () {
   const tasks = [
     ["start        ", "Run API"],
     ["denon        ", "Run API via denon for development"],
+    ["test         ", "Run tests"],
     ["cache        ", "Cache and lock dependencies"],
-    [
-      "mongodb      ",
-      "Start mongodb server for development",
-    ],
-    ["mongodb-stop ", "Stop mongodb server for development"],
-    [
-      "denon-install",
-      "Install denon for development",
-    ],
-    ["mongodb-install", "Install mongodb for development"],
+    ["bundle         ", "Run bundle"],
     ["gen-secret", "Generate secret key"],
   ];
   console.log(`\n\n\n\n`);
@@ -64,6 +56,13 @@ desc("Cache reload and lock dependencies");
 task("cache-reload", [], async function () {
   await sh(
     "deno cache --reload --lock=lock.json --lock-write --unstable --import-map=import_map.json src/mod.ts",
+  );
+});
+
+desc("Bundle ");
+task("bundle", [], async function () {
+  await sh(
+    "deno bundle --unstable --import-map=import_map.json src/mod.ts token-auth-server.bundle.js",
   );
 });
 

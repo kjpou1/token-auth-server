@@ -2,6 +2,8 @@ name: CI
 on:
   pull_request:
     branches: [develop]
+  push:
+    branches: [develop]    
 
 jobs:
   build:
@@ -13,34 +15,28 @@ jobs:
     env:
       working_directory: ./api
     steps:
-      - name: List Files
-        run: |
-          pwd
-          ls -a
-      - name: Git Checkout Deno Module
-        uses: actions/checkout@v2.4.0
-      - name: List Files After checkout
-        run: |
-          pwd
-          ls -a
-        working-directory: ${{env.working-directory}}
+      - uses: actions/checkout@v2.4.0
       - name: Use Deno Version ${{ matrix.deno_version }}
         uses: denolib/setup-deno@v2
         with:
           deno-version: ${{ matrix.deno_version }}
       # - name: Lint Deno Module
       #   run: deno fmt --check
-      - name: Build api
-        run: |
+      - run: |
           cd api
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: CI
-      - name: Test the api
-        run: |
+      - run: |
           cd api
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts test
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
+      - name: Build Project
+        # This happens when the pull request has been approved
+        if: github.event_name == 'push'  
+        run: |
+          cd api
+          DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts bundle
