@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    command: yarn start
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./frontend/src:/usr/app/src
+
+  api:
+    build:
+      context: ./api
+    container_name: api
+    command: start
+    init: true
+    environment:
+      - PORT=3001
+      - URL=http://localhost
+      - MONGO_URL=mongodb://api_mongo:27017
+      - DB_NAME=todo
+      - API_VERSION=v1
+    volumes:
+      - ./api/src:/usr/app/src
+
+  api_mongo:
+    image: mongo:latest
+    container_name: api_mongo
+    volumes:
+      - mongodb_api:/data/db
+    ports:
+      - '27017:27017'
+
+  nginx:
+    image: nginx:1.18.0-alpine
+    ports:
+      - '8080:80'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+
+volumes:
+  mongodb_api:

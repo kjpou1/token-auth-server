@@ -23,8 +23,27 @@ Deno.test("it should return 401", async () => {
 
   request.post("api/v1/login")
     .set("Content-Type", "application/json")
-    .send('{"email":"superoak"}')
+    .send('{"name":"superoak"}')
     .expect(401).end((err: any, response: IResponse) => {
+      if (err) {
+        throw err;
+      }
+      expect(response.body.message).toEqual("User or password not valid.");
+      done();
+    });
+  await donePromise;
+});
+
+Deno.test("it should return 404", async () => {
+  const request = await superoak("http://localhost:3001/");
+
+  let done: () => void;
+  const donePromise = new Promise<void>((resolve) => done = resolve);
+
+  request.post("api/v1/login")
+    .set("Content-Type", "application/json")
+    .send('{"email":"superoak"}')
+    .expect(404).end((err: any, response: IResponse) => {
       if (err) {
         throw err;
       }
