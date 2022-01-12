@@ -22,19 +22,21 @@ jobs:
           deno-version: ${{ matrix.deno_version }}
       # - name: Lint Deno Module
       #   run: deno fmt --check
-      - run: |
+      - name: Cache files
+        run: |
           cd api
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: CI
+      - name: Run tests          
       - run: |
           cd api
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts test
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
-      - name: Build Project
+      - name: Build / Bundle Project
         # This happens when the pull request has been approved
         if: github.event_name == 'push'  
         run: |
