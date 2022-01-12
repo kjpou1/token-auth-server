@@ -13,10 +13,10 @@ export function validPasswordRule(
   // To run a check against 10k common passwords
   const verificationResult = checkPasswordWithResult({
     password: passwordString,
-    minLen: 3,
-    // containsAlphabet: true,
-    // containsNum: true,
-    // containsSpecialChar: true,
+    minLen: 8,
+    containsAlphabet: true,
+    containsNum: true,
+    containsSpecialChar: true,
     checkWithCommonPasswords: true,
   });
 

@@ -39,6 +39,10 @@ jobs:
         run: |
           cd api
           deno test --allow-none
+          deno cache ./src/mod.ts
+        working-directory: ${{env.working-directory}}          
+      - name: Test the api
+        run: deno test --allow-none
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
