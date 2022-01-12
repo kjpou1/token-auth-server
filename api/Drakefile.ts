@@ -1,6 +1,6 @@
 import { desc, run, sh, task } from "https://deno.land/x/drake@v1.5.0/mod.ts";
-import { jwtSecretGen } from "./src/utils/jwtSecretGen.ts";
 import { databaseSeed } from "./src/utils/databaseSeed.ts";
+import { jwtSecretGen } from "./src/utils/jwtSecretGen.ts";
 
 desc("Help");
 task("help", [], function () {
@@ -43,21 +43,13 @@ task("denon", [], async function () {
   );
 });
 
-//"brew services start mongodb/brew/mongodb-community",
-// "docker run -d -p 27017:27017 --dbpath /usr/local/var/mongodb --name deno-auth mongo",
-
-desc("Start mongodb server for development");
-task("mongodb", [], async function () {
+desc("Runt API Tests");
+task("test", [], async function () {
+  // await sh(
+  //   "deno test --allow-none --allow-net --allow-env --allow-read --allow-write --import-map=import_map.json --unstable",
+  // );
   await sh(
-    "brew services start mongodb/brew/mongodb-community",
-  );
-});
-
-//"docker stop deno-auth",
-desc("Stop mongodb server for development");
-task("mongodb-stop", [], async function () {
-  await sh(
-    "brew services stop mongodb/brew/mongodb-community",
+    "echo tests",
   );
 });
 
@@ -78,11 +70,6 @@ task("cache-reload", [], async function () {
 desc("Install denon for development");
 task("denon-install", [], async function () {
   await sh("deno install -Af --unstable https://deno.land/x/denon/denon.ts");
-});
-
-desc("Install mongodb for development");
-task("mongodb-install", [], async function () {
-  await sh("brew install mongodb-community@5.0");
 });
 
 desc("Generate secret key");

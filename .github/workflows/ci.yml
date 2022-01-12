@@ -40,7 +40,7 @@ jobs:
       - name: Test the api
         run: |
           cd api
-          deno test --allow-none
+          DENO_ENV=test deno run -A --import-map=import_map.json --unstable Drakefile.ts test
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
