@@ -62,7 +62,7 @@ task("cache-reload", [], async function () {
 desc("Bundle ");
 task("bundle", [], async function () {
   await sh(
-    "deno bundle --unstable --import-map=import_map.json src/mod.ts token-auth-server.bundle.js",
+    "mkdir -p bundle && deno bundle --unstable --import-map=import_map.json src/mod.ts bundle/token-auth-server.bundle.js",
   );
 });
 
