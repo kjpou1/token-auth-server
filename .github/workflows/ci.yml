@@ -1,9 +1,9 @@
 name: CI
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, main]
   push:
-    branches: [develop]    
+    branches: [develop, main]    
 
 jobs:
   build:
@@ -65,3 +65,16 @@ jobs:
         with:
           name: bundle
           path: api/bundle/token-auth-server.bundle.js
+      - name: Create a Release
+        if: github.event_name == 'push' && github.ref == 'ref/heads/main'
+        run: |
+          cd api
+          echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
+      - name: Deploy to Staging
+        if: github.event_name == 'push' && github.ref == 'ref/heads/develop'
+        run: |
+          cd api
+          echo 'Placeholder for sending to staging - Left Blank on Purpose'
+
+
+
