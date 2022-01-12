@@ -26,6 +26,12 @@
 
 </div>
 
+### develop branch 
+[![CI](https://github.com/kjpou1/token-auth-server/workflows/CI/badge.svg?branch=develop&event=push)](https://github.com/kjpou1/token-auth-server/actions/workflows/ci.yml)
+
+### main branch 
+[![CI](https://github.com/kjpou1/token-auth-server/workflows/CI/badge.svg?branch=main&event=push)](https://github.com/kjpou1/token-auth-server/actions/workflows/ci.yml)
+
 ---
 
 # Token Authentication Server
