@@ -6,10 +6,12 @@ export function loadConfig(
 ): Record<string, string> {
   // Check if there is an override
   env = Deno.env.get("DENO_ENV") ?? env;
+  const safe = env !== "CI"; // Is this being executed from CI
+
   const configOptions = {
     path: `.env.${env}`,
     export: true,
-    safe: true,
+    safe,
     example: `.env.example`,
     allowEmptyValues: false,
     defaults: `.env.defaults`,
