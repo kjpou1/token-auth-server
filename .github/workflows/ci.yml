@@ -19,7 +19,7 @@ jobs:
       # - name: Lint Deno Module
       #   run: deno fmt --check
       - name: Build api
-        run: deno cache ./src/mod.ts
+        run: deno cache src/mod.ts
       - name: Test the api
         run: deno test --allow-none
         env:
