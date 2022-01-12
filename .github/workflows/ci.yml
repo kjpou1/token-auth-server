@@ -32,12 +32,12 @@ jobs:
       #   run: deno fmt --check
       - name: Build api
         run: |
-          cd ${{env.working-directory}}
+          cd api
           deno cache ./src/mod.ts
         working-directory: ${{env.working-directory}}          
       - name: Test the api
         run: |
-          cd ${{env.working-directory}}
+          cd api
           deno test --allow-none
         working-directory: ${{env.working-directory}}
         env:
