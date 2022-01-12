@@ -32,10 +32,13 @@ jobs:
       #   run: deno fmt --check
       - name: Build api
         run: |
-          deno cache ./src/mod.ts
+          cd api
+          deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
         working-directory: ${{env.working-directory}}          
       - name: Test the api
-        run: deno test --allow-none
+        run: |
+          cd api
+          deno test --allow-none
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
