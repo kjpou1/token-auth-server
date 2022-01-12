@@ -59,13 +59,6 @@ task("cache-reload", [], async function () {
   );
 });
 
-desc("Cached only");
-task("cached-only", [], async function () {
-  await sh(
-    "deno cache --cached-only --lock=lock.json --lock-write --unstable --import-map=import_map.json src/mod.ts",
-  );
-});
-
 desc("Bundle ");
 task("bundle", [], async function () {
   await sh(

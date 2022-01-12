@@ -46,13 +46,10 @@ jobs:
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
-      - name: check lock file
+      - name: Check lock file
         continue-on-error: true
         run: |
           cd api
-          if [[ -f lock.json ]]; then
-            DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cached-only
-          fi
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
           cat lock.json          
       - name: Build / Bundle Project
