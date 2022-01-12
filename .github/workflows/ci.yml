@@ -10,6 +10,8 @@ jobs:
         os: [ubuntu-latest] # [macos-latest, ubuntu-latest, windows-latest]
         deno_version: [1.17.1, 1.17.2]
     runs-on: ${{ matrix.os }}
+    env:
+      working_directory: ./api
     steps:
       - name: List Files
         run: |
@@ -21,6 +23,7 @@ jobs:
         run: |
           pwd
           ls -a
+        working-directory: ${{env.working-directory}}
       - name: Use Deno Version ${{ matrix.deno_version }}
         uses: denolib/setup-deno@v2
         with:
@@ -28,8 +31,11 @@ jobs:
       # - name: Lint Deno Module
       #   run: deno fmt --check
       - name: Build api
-        run: deno cache src/mod.ts
+        run: |
+          deno cache ./src/mod.ts
+        working-directory: ${{env.working-directory}}          
       - name: Test the api
         run: deno test --allow-none
+        working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: test
