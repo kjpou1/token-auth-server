@@ -1,0 +1,26 @@
+name: CI
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest] # [macos-latest, ubuntu-latest, windows-latest]
+        deno_version: [1.17.1, 1.17.2]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - name: Use Deno Version ${{ matrix.deno_version }}
+        uses: denolib/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.deno_version }}
+      - name: Lint Deno Module
+        run: deno fmt --check
+      - name: Build api
+        run: deno cache ./src/mod.ts
+      - name: Test the api
+        run: deno test --allow-none
+        env:
+          DENO_ENV: test
