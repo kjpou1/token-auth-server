@@ -16,7 +16,7 @@ jobs:
       working_directory: ./api
     steps:
       - uses: actions/checkout@v2.4.0
-      - name: Define short variable
+      - name: Define short sha variable
         run: echo "SHORT_SHA=`git rev-parse --short HEAD`" >> $GITHUB_ENV
       - name: cache deno installation and deno.land dependencies
         uses: actions/cache@v2
@@ -65,8 +65,6 @@ jobs:
         if: github.event_name == 'push'  
         uses: actions/upload-artifact@v2
         with:
-          # git_branch=`git symbolic-ref --short HEAD`
-          # git_hash=`git rev-parse --short HEAD`
           name: bundle-${{ matrix.deno_version }}-${{ env.SHORT_SHA }}
           path: api/bundle/token-auth-server.bundle.js
       - name: Create a Release
