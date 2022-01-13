@@ -41,6 +41,13 @@ jobs:
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: CI
+      - name: Build Docker Image
+        run: |
+          cp env.example env
+          docker compose build
+        working-directory: ${{env.working-directory}}
+        env:
+          DENO_ENV: CI
       - name: Run tests          
         run: |
           cd api
