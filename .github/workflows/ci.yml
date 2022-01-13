@@ -63,15 +63,15 @@ jobs:
         if: github.event_name == 'push'  
         uses: actions/upload-artifact@v2
         with:
-          name: bundle
+          name: bundle-${{ matrix.deno_version }}-${{ github.sha }}
           path: api/bundle/token-auth-server.bundle.js
       - name: Create a Release
-        if: github.event_name == 'push' && github.ref == 'ref/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           cd api
           echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
       - name: Deploy to Staging
-        if: github.event_name == 'push' && github.ref == 'ref/heads/develop'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
           cd api
           echo 'Placeholder for sending to staging - Left Blank on Purpose'
