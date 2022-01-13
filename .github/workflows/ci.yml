@@ -67,7 +67,7 @@ jobs:
         with:
           # git_branch=`git symbolic-ref --short HEAD`
           # git_hash=`git rev-parse --short HEAD`
-          name: bundle-${{ matrix.deno_version }}-$(SHORT_SHA)
+          name: bundle-${{ matrix.deno_version }}-${SHORT_SHA}
           path: api/bundle/token-auth-server.bundle.js
       - name: Create a Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
