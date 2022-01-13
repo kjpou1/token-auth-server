@@ -10,7 +10,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] # [macos-latest, ubuntu-latest, windows-latest]
-        deno_version: [1.17.1, 1.17.2]
+        #deno_version: [1.17.1, 1.17.2]
+        deno_version: [1.17.1]
     runs-on: ${{ matrix.os }}
     env:
       working_directory: ./api
