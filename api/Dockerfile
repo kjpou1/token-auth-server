@@ -1,10 +1,12 @@
-FROM denoland/deno:alpine-1.17.1
+ARG DENO_VERSION=1.17.1
+FROM denoland/deno:alpine-${DENO_VERSION}
+ARG DENO_ENV=development
 
 #RUN deno install --allow-read --allow-run --allow-write --allow-net -f --unstable https://deno.land/x/denon/denon.ts
 #https://github.com/denosaurs/denon/issues/155
 RUN deno install --allow-read --allow-run --allow-write --allow-net -f --unstable https://raw.githubusercontent.com/nnmrts/denon/patch-4/denon.ts
 
-WORKDIR /api
+WORKDIR /api 
 
 # Prefer not to run as root.
 #USER deno

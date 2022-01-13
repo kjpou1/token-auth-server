@@ -6,8 +6,10 @@ services:
     build:
       context: ./api
       dockerfile: ./Dockerfile
+      args:
+        DENO_VERSION: ${DENO_VERSION-1.17.1}
+        DENO_ENV: ${DENO_ENV-development}
     container_name: token-auth-server
-    
     volumes:
       - '${PWD}/api:/api'
     depends_on:
@@ -39,7 +41,7 @@ services:
     env_file:
       - '.env'
 
-  api-redis:
+  api_redis:
     image: redis:latest
     container_name: api_redis
     ports: 
