@@ -46,7 +46,7 @@ jobs:
         run: |
           pwd
           ls -a
-          cp env.example env
+          cp .env.example .env
           docker compose build
         working-directory: ${{env.working-directory}}
         env:
