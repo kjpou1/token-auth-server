@@ -65,8 +65,8 @@ jobs:
           DENO_ENV: CI
       - name: Image Tagging
         run: |
-          docker tag ${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }}
-          docker tag ${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:latest
+          docker tag ${{ env.DOCKER_PROJECT_NAME_API }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }}
+          docker tag ${{ env.DOCKER_PROJECT_NAME_API }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:latest
 
       # End of Docker build and tagging
 
