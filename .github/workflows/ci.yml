@@ -100,8 +100,13 @@ jobs:
           path: api/bundle/token-auth-server.bundle.js
       
       #------------------------------------
-      # main branch
+      # main branch deploy
       #------------------------------------
+      - name: Create a Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cd ${{ env.WORKING_DIRECTORY_API }}
+          echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
       # Signin to DockerHub
       - name: Login to DockerHub
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -110,11 +115,12 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       # Deploy to Docker Hub
-      - name: Create a Release
+      - name: Push to Docker Hub
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
-          echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:latest
+          
 
       #------------------------------------
       # develop branch
