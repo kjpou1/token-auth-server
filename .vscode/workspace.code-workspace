@@ -5,8 +5,8 @@
             "path": "../api"
         },
         {
-            "name": "FRONTEND",
-            "path": "../frontend"
+            "name": "FORMS",
+            "path": "../forms"
         },
         {
             "name": "GENERAL",

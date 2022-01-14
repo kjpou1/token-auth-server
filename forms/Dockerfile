@@ -11,7 +11,5 @@ RUN yarn install && mv node_modules /node_modules
 
 COPY . .
 
-#LABEL maintainer="Nick Janetakis <nick.janetakis@gmail.com>"
-
 CMD yarn serve --port=3002
 EXPOSE 3002
