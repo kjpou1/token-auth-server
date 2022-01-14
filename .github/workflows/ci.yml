@@ -15,8 +15,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       WORKING_DIRECTORY_API: ./api
+      WORKING_DIRECTORY_FORMS: ./forms
       DOCKER_PROJECT_NAME: ${{ github.event.repository.name }}
       DOCKER_PROJECT_NAME_API: ${{ github.event.repository.name }}_api
+      DOCKER_PROJECT_NAME_FORMS: ${{ github.event.repository.name }}_forms
     steps:
       - uses: actions/checkout@v2.4.0
 
@@ -56,7 +58,9 @@ jobs:
           DENO_ENV: CI
 
       # Start of Docker steps
-      - name: Build Docker Image
+      
+      # API build and tagging
+      - name: Build Docker Image API
         run: |
           cd ${{ env.WORKING_DIRECTORY_API }}
           docker image build -t ${{ env.DOCKER_PROJECT_NAME_API }} .
@@ -68,6 +72,23 @@ jobs:
           docker tag ${{ env.DOCKER_PROJECT_NAME_API }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }}
           docker tag ${{ env.DOCKER_PROJECT_NAME_API }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:latest
 
+      # API end build and tagging
+      
+      # FORMS build and tagging
+      - name: Build Docker Image FORMS
+        run: |
+          cd ${{ env.WORKING_DIRECTORY_FORMS }}
+          docker image build -t ${{ env.DOCKER_PROJECT_NAME_FORMS }} .
+        working-directory: ${{env.working-directory}}
+        env:
+          DENO_ENV: CI
+      - name: Image Tagging
+        run: |
+          docker tag ${{ env.DOCKER_PROJECT_NAME_FORMS }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_FORMS }}:${{ env.SHORT_SHA }}
+          docker tag ${{ env.DOCKER_PROJECT_NAME_FORMS }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_FORMS }}:latest
+
+      # FORMS end build and tagging
+      
       # End of Docker build and tagging
 
       # Start tests          
@@ -107,6 +128,7 @@ jobs:
         run: |
           cd ${{ env.WORKING_DIRECTORY_API }}
           echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
+          
       # Signin to DockerHub
       - name: Login to DockerHub
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -114,12 +136,15 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          
       # Deploy to Docker Hub
       - name: Push to Docker Hub
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_FORMS }}:${{ env.SHORT_SHA }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_FORMS }}:latest
           
 
       #------------------------------------
