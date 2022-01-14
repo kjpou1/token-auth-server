@@ -1,9 +1,9 @@
 name: CI
 on:
   pull_request:
-    branches: [develop, main]
+    branches: [main]
   push:
-    branches: [develop, main]    
+    branches: [main]
 
 jobs:
   build:
@@ -14,11 +14,17 @@ jobs:
         deno_version: [1.17.1]
     runs-on: ${{ matrix.os }}
     env:
-      working_directory: ./api
+      WORKING_DIRECTORY_API: ./api
+      DOCKER_PROJECT_NAME: ${{ github.event.repository.name }}
+      DOCKER_PROJECT_NAME_API: ${{ github.event.repository.name }}_api
     steps:
       - uses: actions/checkout@v2.4.0
+
+      # Defone some variables that will be used.
       - name: Define short sha variable
         run: echo "SHORT_SHA=`git rev-parse --short HEAD`" >> $GITHUB_ENV
+        
+      # Setup cache and deno
       - name: cache deno installation and deno.land dependencies
         uses: actions/cache@v2
         with:
@@ -27,33 +33,48 @@ jobs:
           path: |
             /home/runner/.deno
             /home/runner/.cache/deno/deps/https/deno.land      
+      
+      # Setup deno version
       - name: Use Deno Version ${{ matrix.deno_version }}
         uses: denolib/setup-deno@v2
         with:
           deno-version: ${{ matrix.deno_version }}
+
+      # Do some format checking
       - name: Check formatting
         run: |
-          cd api
+          cd ${{ env.WORKING_DIRECTORY_API }}
           deno fmt --check
+      
+      # Cache the Deno files
       - name: Cache files
         run: |
-          cd api
+          ccd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache-reload
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: CI
+
+      # Start of Docker steps
       - name: Build Docker Image
         run: |
-          pwd
-          ls -a
-          cp .env.example .env
-          docker compose build
+          cd ${{ env.WORKING_DIRECTORY_API }}
+          docker image build -t ${{ env.DOCKER_PROJECT_NAME_API }} .
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: CI
+      - name: Image Tagging
+        run: |
+          docker tag ${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }}
+          docker tag ${{ env.DOCKER_PROJECT_NAME_API }}:${{ env.SHORT_SHA }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.DOCKER_PROJECT_NAME_API }}:latest
+
+      # End of Docker build and tagging
+
+      # Start tests          
+      # TODO : Start up test server
       - name: Run tests          
         run: |
-          cd api
+          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts test
         working-directory: ${{env.working-directory}}
         env:
@@ -61,14 +82,14 @@ jobs:
       - name: Check lock file
         continue-on-error: true
         run: |
-          cd api
+          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
           cat lock.json          
       - name: Build / Bundle Project
         # This happens when the pull request has been approved
         if: github.event_name == 'push'  
         run: |
-          cd api
+          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts bundle
       - name: Upload bundle folder
         # This happens when the pull request has been approved
@@ -77,15 +98,31 @@ jobs:
         with:
           name: bundle-${{ matrix.deno_version }}-${{ env.SHORT_SHA }}
           path: api/bundle/token-auth-server.bundle.js
+      
+      #------------------------------------
+      # main branch
+      #------------------------------------
+      # Signin to DockerHub
+      - name: Login to DockerHub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      # Deploy to Docker Hub
       - name: Create a Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          cd api
+          cd ${{ env.WORKING_DIRECTORY_API }}
           echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
+
+      #------------------------------------
+      # develop branch
+      #------------------------------------
       - name: Deploy to Staging
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
-          cd api
+          cd ${{ env.WORKING_DIRECTORY_API }}
           echo 'Placeholder for sending to staging - Left Blank on Purpose'
 
 
