@@ -1,6 +1,10 @@
 ARG DENO_VERSION=1.17.1
 FROM denoland/deno:alpine-${DENO_VERSION}
+
+# arguments
 ARG DENO_ENV=development
+ARG BACKEND_ENTRYPOINT=deno
+
 
 #RUN deno install --allow-read --allow-run --allow-write --allow-net -f --unstable https://deno.land/x/denon/denon.ts
 #https://github.com/denosaurs/denon/issues/155
@@ -11,7 +15,9 @@ WORKDIR /api
 # Prefer not to run as root.
 #USER deno
 
+# set environment variables
 ENV DENO_RUN_OPTIONS="--import-map=import_map.json --unstable"
+ENV BACKEND_ENTRYPOINT=${BACKEND_ENTRYPOINT}
 
 # Cache the dependencies as a layer (the following two steps are re-run only when deps.ts is modified).
 # Ideally cache deps.ts will download and compile _all_ external files used in main.ts.
