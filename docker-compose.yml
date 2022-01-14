@@ -23,20 +23,20 @@ services:
     env_file:
       - '.env'      
 
-  frontend:
+  forms:
     build:
-      context: ./frontend
+      context: ./forms
       dockerfile: ./Dockerfile
-    container_name: token-auth-frontend
+    container_name: token-auth-forms
     
     volumes:
-      - '${PWD}/frontend:/app'
+      - '${PWD}/forms:/app'
     depends_on:
       - api
     ports:
       - "3002:3002"
     networks:
-      - frontend
+      - forms
       - backend
     env_file:
       - '.env'
@@ -65,6 +65,6 @@ volumes:
   mongodb_api:
 
 networks:
-  frontend:
+  forms:
   backend:  
   database:
