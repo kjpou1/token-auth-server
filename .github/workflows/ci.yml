@@ -49,7 +49,7 @@ jobs:
       # Cache the Deno files
       - name: Cache files
         run: |
-          ccd ${{ env.WORKING_DIRECTORY_API }}
+          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache-reload
         working-directory: ${{env.working-directory}}
         env:
