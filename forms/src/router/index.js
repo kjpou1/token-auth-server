@@ -3,7 +3,7 @@ import NotFound from '@/views/NotFound.vue';
 
 const routes = [
   {
-    path: '/signin',
+    path: '/auth-forms/signin',
     name: 'SignIn',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -11,7 +11,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/AuthSignIn.vue'),
   },
   {
-    path: '/register',
+    path: '/auth-forms/register',
     name: 'Register',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
