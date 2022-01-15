@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+
+  api:
+    build:
+      context: ./api
+      dockerfile: ./Dockerfile
+      args:
+        DENO_VERSION: ${DENO_VERSION-1.17.1}
+        DENO_ENV: ${DENO_ENV-development}
+    container_name: token-auth-server
+    volumes:
+      - '${PWD}/api:/api'
+    depends_on:
+      - api_mongo
+      - api_redis
+    # ports:
+    #   - "3001:3001"
+    networks:
+      - backend
+      - database
+    env_file:
+      - '.env'      
+
+  forms:
+    build:
+      context: ./forms
+      dockerfile: ./Dockerfile.prod
+    container_name: token-auth-forms
+    depends_on:
+      - api
+    ports:
+      - "3002:3002"
+    networks:
+      - forms
+      - backend
+    env_file:
+      - '.env'
+
+  api_redis:
+    image: redis:latest
+    container_name: api_redis
+    ports: 
+      - "6379:6379"
+    networks:
+      - backend
+
+  api_mongo:
+    image: mongo:latest
+    container_name: api_mongo
+    volumes:
+      - mongodb_api:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      - database
+    env_file:
+      - '.env'      
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - '8080:80'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - forms
+      - api
+    networks:
+      - forms
+      - backend
+
+volumes:
+  mongodb_api:
+
+networks:
+  forms:
+  backend:  
+  database:

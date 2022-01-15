@@ -1,0 +1,4 @@
+**/Dockerfile
+**/.dockerignore
+**/id_hmac_pub.key
+**/bundle

@@ -78,7 +78,7 @@ jobs:
       - name: Build Docker Image FORMS
         run: |
           cd ${{ env.WORKING_DIRECTORY_FORMS }}
-          docker image build -t ${{ env.DOCKER_PROJECT_NAME_FORMS }} .
+          docker image build -f Dockerfile.prod -t ${{ env.DOCKER_PROJECT_NAME_FORMS }} .
         working-directory: ${{env.working-directory}}
         env:
           DENO_ENV: CI
