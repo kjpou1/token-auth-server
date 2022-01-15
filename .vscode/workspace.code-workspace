@@ -11,7 +11,12 @@
         {
             "name": "GENERAL",
             "path": "..",
+        },
+        {
+            "name": "PROXY",
+            "path": "../nginx",
         }
+
     ],
     // "settings": {
     //     "deno.enable": true,
