@@ -55,7 +55,7 @@
                   type = "submit"
                   :disabled="this.isSigningIn"
                 >Sign In</button>
-                <p class="mt-16 text-xs text-center dark:text-gray-100">Don’t Have An Account? <a class="underline text-indigo-600" href="/register">Sign Up</a></p>
+                <p class="mt-16 text-xs text-center dark:text-gray-100">Don’t Have An Account? <a class="underline text-indigo-600" href="/auth-forms/register">Sign Up</a></p>
             </div>
           </vee-form>
         </div>
