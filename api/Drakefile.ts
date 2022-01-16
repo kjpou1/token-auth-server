@@ -45,6 +45,13 @@ task("test", [], async function () {
   );
 });
 
+desc("Start using bundle ");
+task("start-bundle", [], async function () {
+  await sh(
+    "deno run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json bundle/token-auth-server.bundle.js ",
+  );
+});
+
 desc("Cache and lock dependencies");
 task("cache", [], async function () {
   await sh(
