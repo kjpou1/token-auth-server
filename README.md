@@ -114,6 +114,7 @@ Start up the [docker compose](https://docs.docker.com/compose/install/) file pro
 
 This may take a while on first run while everything is being downloaded, built and installed.
 
+By default the auth server can be reached at `http://localhost:3001/api/vi/`
 
 ## Authentication Forms
 
@@ -121,5 +122,5 @@ There are a couple of delivered forms that one can use.
 
 They use a redirect after a successful action.
 
-- Sign In with redirect - http://localhost:3002/signin
-- Register with redirect - http://localhost:3002/register
+- Sign In with redirect - http://localhost:3001/auth-forms/signin
+- Register with redirect - http://localhost:3001/auth-forms/register
