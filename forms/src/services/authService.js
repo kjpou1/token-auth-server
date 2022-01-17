@@ -1,5 +1,7 @@
-const API_VERSION = process.env.VUE_APP_API_VERSION;
-const API_URL = `${process.env.VUE_APP_API_URL}${API_VERSION}/`;
+import Configuration from '@/helpers/ConfigProvider';
+
+const API_VERSION = Configuration.value('apiVersion');
+const API_URL = `${Configuration.value('apiURL')}${API_VERSION}/`;
 
 class AuthService {
   static async signIn(user) {
