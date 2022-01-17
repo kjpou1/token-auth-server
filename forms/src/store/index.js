@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import { combineURLs } from '@/helpers';
+import Configuration from '@/helpers/ConfigProvider';
 import AuthService from '@/services/authService';
 
 export default createStore({
@@ -59,11 +60,11 @@ export default createStore({
   },
   actions: {
     signInRedirect({ state }) {
-      const redirectTo = combineURLs(process.env.VUE_APP_SIGNIN_REDIRECT, `?requestId=${state.signInRequestId}`);
+      const redirectTo = combineURLs(Configuration.value('signInRedirect'), `?requestId=${state.signInRequestId}`);
       window.location.href = redirectTo;
     },
     registerRedirect() {
-      const redirectTo = process.env.VUE_APP_REGISTER_REDIRECT;
+      const redirectTo = Configuration.value('registerRedirect');
       window.location.href = redirectTo;
     },
     async register({ commit }, payload) {
