@@ -1,6 +1,6 @@
 import * as middlewares from "./middlewares/middlewares.ts";
 import routes from "./routes/routes.ts";
-import { Application, log } from "./utils/deps.ts";
+import { Application, log, oakCors } from "./utils/deps.ts";
 import { ensureEnvironment } from "./utils/utils.ts";
 
 ensureEnvironment();
@@ -61,6 +61,12 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
 //     origin: /^.+localhost:(3000|3008|8080)$/,
 //   }),
 // );
+app.use(
+  oakCors({
+    credentials: true,
+    origin: "*",
+  }),
+);
 
 app.use(middlewares.setContentType);
 app.use(middlewares.errorMiddleware);
