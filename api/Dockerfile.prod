@@ -5,6 +5,7 @@ FROM denoland/deno:alpine-${DENO_VERSION} as build-stage
 ARG DENO_ENV=production
 ARG BACKEND_ENTRYPOINT=deno
 
+RUN mkdir /api
 WORKDIR /api 
 
 # Prefer not to run as root.
