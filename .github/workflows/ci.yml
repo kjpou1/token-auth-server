@@ -45,15 +45,14 @@ jobs:
       # Do some format checking
       - name: Check formatting
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           deno fmt --check
-      
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
+
       # Cache the Deno files
       - name: Cache files
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache-reload
-        working-directory: ${{env.working-directory}}
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
         env:
           DENO_ENV: CI
 
@@ -62,9 +61,8 @@ jobs:
       # API build and tagging
       - name: Build Docker Image API
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           docker image build -f Dockerfile.prod -t ${{ env.DOCKER_PROJECT_NAME_API }} .
-        working-directory: ${{env.working-directory}}
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
         env:
           DENO_ENV: CI
       - name: Image Tagging
@@ -77,9 +75,8 @@ jobs:
       # FORMS build and tagging
       - name: Build Docker Image FORMS
         run: |
-          cd ${{ env.WORKING_DIRECTORY_FORMS }}
           docker image build -f Dockerfile.prod -t ${{ env.DOCKER_PROJECT_NAME_FORMS }} .
-        working-directory: ${{env.working-directory}}
+        working-directory: ${{ env.WORKING_DIRECTORY_FORMS }}
         env:
           DENO_ENV: CI
       - name: Image Tagging
@@ -95,23 +92,22 @@ jobs:
       # TODO : Start up test server
       - name: Run tests          
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts test
-        working-directory: ${{env.working-directory}}
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
         env:
           DENO_ENV: test
       - name: Check lock file
         continue-on-error: true
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts cache
           cat lock.json          
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
       - name: Build / Bundle Project
         # This happens when the pull request has been approved
         if: github.event_name == 'push'  
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           DENO_ENV=CI deno run -A --import-map=import_map.json --unstable Drakefile.ts bundle
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
       - name: Upload bundle folder
         # This happens when the pull request has been approved
         if: github.event_name == 'push'  
@@ -126,9 +122,8 @@ jobs:
       - name: Create a Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           echo 'Placeholder for creating a semantic release - Left Blank on Purpose'
-          
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
       # Signin to DockerHub
       - name: Login to DockerHub
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -153,8 +148,8 @@ jobs:
       - name: Deploy to Staging
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         run: |
-          cd ${{ env.WORKING_DIRECTORY_API }}
           echo 'Placeholder for sending to staging - Left Blank on Purpose'
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
 
 
 
