@@ -64,7 +64,7 @@ jobs:
         run: |
           cd ${{ env.WORKING_DIRECTORY_API }}
           docker image build -f Dockerfile.prod -t ${{ env.DOCKER_PROJECT_NAME_API }} .
-        working-directory: ${{env.working-directory}}
+        working-directory: ${{ env.WORKING_DIRECTORY_API }}
         env:
           DENO_ENV: CI
       - name: Image Tagging
@@ -79,7 +79,7 @@ jobs:
         run: |
           cd ${{ env.WORKING_DIRECTORY_FORMS }}
           docker image build -f Dockerfile.prod -t ${{ env.DOCKER_PROJECT_NAME_FORMS }} .
-        working-directory: ${{env.working-directory}}
+        working-directory: ${{ env.WORKING_DIRECTORY_FORMS }}
         env:
           DENO_ENV: CI
       - name: Image Tagging
