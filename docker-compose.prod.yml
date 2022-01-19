@@ -11,8 +11,8 @@ services:
         DENO_ENV: ${DENO_ENV-production}
         BACKEND_ENTRYPOINT: deno
     container_name: token-auth-server
-    # volumes:
-    #   - '${PWD}/api:/api'
+    volumes:
+      - '${PWD}/api:/api'
     depends_on:
       - api_mongo
       - api_redis
