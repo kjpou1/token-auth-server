@@ -54,9 +54,11 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
   log.info("################################################");
 });
 
-// If you use the default options, it will work as both origin: true and credentials: true.
 app.use(
-  oakCors(),
+  oakCors({
+    credentials: true,
+    origin: true,
+  }),
 );
 
 app.use(middlewares.setContentType);
