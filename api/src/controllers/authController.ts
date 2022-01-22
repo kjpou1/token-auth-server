@@ -3,6 +3,7 @@ import { authorize, requestValidator } from "../middlewares/middlewares.ts";
 import { UserSchema } from "../schemas/schemas.ts";
 import {
   EncryptionService,
+  MailerService,
   TokenRequestService,
   TokenService,
   UserService,
@@ -14,6 +15,7 @@ import {
 import {
   CreateUser,
   LoginUserResponse,
+  ResponseUser,
   UserRole,
 } from "../types/user/userTypes.ts";
 import {
@@ -60,16 +62,26 @@ export const Register: [
         `User already exists with email: ${user.email}`,
       );
     }
-    const userData = createResponseUser(
+    const userData: ResponseUser | undefined = createResponseUser(
       await UserService.createUser(user) as UserSchema,
     );
 
-    response.body = {
-      code: "success",
-      status: 200,
-      message: "success",
-      details: userData,
-    };
+    if (userData) {
+      const content = await MailerService.sendRegistered(
+        userData,
+      );
+      console.log(content);
+      response.body = {
+        code: "success",
+        status: 200,
+        message: "success",
+        details: userData,
+      };
+    } else {
+      throw new httpErrors.BadRequest(
+        "Error registering user.  Try again later or contact support",
+      );
+    }
   },
 ];
 
@@ -146,7 +158,7 @@ async function setAuthResponse(
     jti: tokens.jti,
     tokenType: AUTH_TOKEN_TYPE,
     expiresIn: Number(JWT_ACCESS_TOKEN_EXP),
-    user: createResponseUser(user),
+    user: createResponseUser(user) as ResponseUser | undefined,
   };
 
   if (tokens.jti) {
