@@ -36,7 +36,7 @@ export const RequestReset: [
       requestResetData,
     );
 
-    const content = MailerService.sendResetRequest(
+    const content = await MailerService.sendResetRequest(
       resetInformation,
       requestResetData,
     );

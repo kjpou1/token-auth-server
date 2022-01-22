@@ -16,6 +16,7 @@
     "redis": "https://deno.land/x/redis@v0.25.1/mod.ts",
     "superoak": "https://deno.land/x/superoak@4.6.0/mod.ts",
     "asserts": "https://deno.land/std@0.120.0/testing/asserts.ts",
-    "expect": "https://deno.land/x/expect@v0.2.9/mod.ts"
+    "expect": "https://deno.land/x/expect@v0.2.9/mod.ts",
+    "smtp": "https://raw.githubusercontent.com/kjpou1/deno-smtp/master/mod.ts"
   }
 }

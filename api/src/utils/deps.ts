@@ -26,5 +26,7 @@ export { checkPasswordWithResult } from "password_checker";
 export { join } from "path";
 export { connect as redisConnect } from "redis";
 export type { Redis } from "redis";
+export { SmtpClient } from "smtp";
+export type { SendConfig } from "smtp";
 export { v4 } from "uuid";
 export * as validasaur from "validasaur";

@@ -31,7 +31,7 @@ export function ensureEnvironment() {
   ensureSecretKeyFileExists();
 }
 
-export function createResponseUser(user: UserSchema) {
+export function createResponseUser(user: UserSchema): ResponseUser | undefined {
   if (user) {
     const responseUser = omit(
       user,
@@ -39,7 +39,7 @@ export function createResponseUser(user: UserSchema) {
     );
     return responseUser;
   }
-  return null;
+  return undefined;
 }
 
 export function createTokenPayload(user: UserSchema) {
