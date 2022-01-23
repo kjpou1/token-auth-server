@@ -10,8 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest] # [macos-latest, ubuntu-latest, windows-latest]
-        #deno_version: [1.17.1, 1.17.2]
-        deno_version: [1.17.1]
+        deno_version: [1.18.0]
     runs-on: ${{ matrix.os }}
     env:
       WORKING_DIRECTORY_API: ./api
@@ -38,7 +37,7 @@ jobs:
       
       # Setup deno version
       - name: Use Deno Version ${{ matrix.deno_version }}
-        uses: denolib/setup-deno@v2
+        uses: denoland/setup-deno@v1
         with:
           deno-version: ${{ matrix.deno_version }}
 
