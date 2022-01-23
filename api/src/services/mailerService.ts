@@ -2,7 +2,7 @@ import { config } from "../config/config.ts";
 import { ResetSchema } from "../schemas/schemas.ts";
 import { ResetRequest } from "../types/reset/resetPasswordTypes.ts";
 import { ResponseUser } from "../types/user/userTypes.ts";
-import { join, SendConfig, SmtpClient } from "../utils/deps.ts";
+import { join, log, SendConfig, SmtpClient } from "../utils/deps.ts";
 
 export class MailerService {
   static async sendRegistered(
@@ -16,13 +16,18 @@ export class MailerService {
         new Date().toUTCString()
       }`;
 
-    await this.smtpSend({
-      from: config.SMTP_USERNAME,
-      to: config.SMTP_USERNAME,
-      subject,
-      content,
-    });
-    console.log(content);
+    try {
+      await this.smtpSend({
+        from: config.SMTP_USERNAME,
+        to: config.SMTP_USERNAME,
+        subject,
+        content,
+      });
+    } catch (err) {
+      log.critical(
+        `Internal Error sending registration confirmation email: ${err}`,
+      );
+    }
     return content;
   }
 
@@ -37,13 +42,19 @@ export class MailerService {
     const url = join(resetURL, resetInformation.token);
     const content = `Click <a href="${url}" >here</a> to reset your password!`;
 
-    await this.smtpSend({
-      from: config.SMTP_USERNAME,
-      to: requestResetData.email,
-      subject,
-      content,
-      html: content,
-    });
+    try {
+      await this.smtpSend({
+        from: config.SMTP_USERNAME,
+        to: requestResetData.email,
+        subject,
+        content,
+        html: content,
+      });
+    } catch (err) {
+      log.critical(
+        `Internal Error sending forgot password confirmation email: ${err}`,
+      );
+    }
 
     return content;
   }
