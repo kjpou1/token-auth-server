@@ -7,7 +7,7 @@ services:
       context: ./api
       dockerfile: ./Dockerfile.dev
       args:
-        DENO_VERSION: ${DENO_VERSION-1.17.1}
+        DENO_VERSION: ${DENO_VERSION-1.18.0}
         DENO_ENV: ${DENO_ENV-development}
     container_name: token-auth-server
     volumes:

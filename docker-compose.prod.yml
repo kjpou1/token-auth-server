@@ -7,7 +7,7 @@ services:
       context: ./api
       dockerfile: ./Dockerfile.prod
       args:
-        DENO_VERSION: ${DENO_VERSION-1.17.1}
+        DENO_VERSION: ${DENO_VERSION-1.18.0}
         DENO_ENV: ${DENO_ENV-production}
         BACKEND_ENTRYPOINT: deno
     container_name: token-auth-server
