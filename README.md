@@ -10,7 +10,7 @@
   </a>
   </br>
   <a href="https://deno.land">
-    <img src="https://img.shields.io/badge/deno-1.17.1-green?logo=deno"/>
+    <img src="https://img.shields.io/badge/deno-1.18.0-green?logo=deno"/>
   </a>
   </br>
   <a href="https://deno.land/x/redis@v0.25.1">
@@ -26,8 +26,8 @@
 
 </div>
 
-### develop branch 
-[![CI](https://github.com/kjpou1/token-auth-server/workflows/CI/badge.svg?branch=develop&event=push)](https://github.com/kjpou1/token-auth-server/actions/workflows/ci.yml)
+<!-- ### develop branch 
+[![CI](https://github.com/kjpou1/token-auth-server/workflows/CI/badge.svg?branch=develop&event=push)](https://github.com/kjpou1/token-auth-server/actions/workflows/ci.yml) -->
 
 ### main branch 
 [![CI](https://github.com/kjpou1/token-auth-server/workflows/CI/badge.svg?branch=main&event=push)](https://github.com/kjpou1/token-auth-server/actions/workflows/ci.yml)
