@@ -2,6 +2,10 @@ import { desc, run, sh, task } from "https://deno.land/x/drake@v1.5.0/mod.ts";
 import { databaseSeed } from "./src/utils/databaseSeed.ts";
 import { jwtSecretGen } from "./src/utils/jwtSecretGen.ts";
 
+const DENO_ALLOW = "--allow-env --allow-net --allow-read";
+const DENO_RUN_OPTIONS = "--import-map=import_map.json --unstable";
+const DENO_PROJECT_NAME = "token-auth-server";
+
 desc("Help");
 task("help", [], function () {
   const tasks = [
@@ -24,21 +28,21 @@ task("help", [], function () {
 desc("Run API");
 task("start", [], async function () {
   await sh(
-    "deno run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json src/mod.ts",
+    `deno run ${DENO_ALLOW} ${DENO_RUN_OPTIONS} src/mod.ts`,
   );
 });
 
 desc("Run API via denon for development");
 task("denon", [], async function () {
   await sh(
-    "denon run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json src/mod.ts",
+    `denon run ${DENO_ALLOW} ${DENO_RUN_OPTIONS} src/mod.ts`,
   );
 });
 
 desc("Runt API Tests");
 task("test", [], async function () {
   // await sh(
-  //   "deno test --allow-none --allow-net --allow-env --allow-read --allow-write --import-map=import_map.json --unstable",
+  //   "deno test ${DENO_ALLOW} ${DENO_RUN_OPTIONS} --unstable",
   // );
   await sh(
     "echo tests",
@@ -48,30 +52,64 @@ task("test", [], async function () {
 desc("Start using bundle ");
 task("start-bundle", [], async function () {
   await sh(
-    "deno run --allow-env --allow-net --allow-read --unstable --import-map=import_map.json bundle/token-auth-server.bundle.js ",
+    `deno run ${DENO_ALLOW} ${DENO_RUN_OPTIONS} bundle/${DENO_PROJECT_NAME}.bundle.js `,
   );
 });
 
 desc("Cache and lock dependencies");
 task("cache", [], async function () {
   await sh(
-    "deno cache --lock=lock.json --lock-write --unstable --import-map=import_map.json src/mod.ts",
+    `deno cache --lock=lock.json --lock-write ${DENO_RUN_OPTIONS} src/mod.ts`,
   );
 });
 
 desc("Cache reload and lock dependencies");
 task("cache-reload", [], async function () {
   await sh(
-    "deno cache --reload --lock=lock.json --lock-write --unstable --import-map=import_map.json src/mod.ts",
+    `echo ${DENO_RUN_OPTIONS} &&  deno cache --reload --lock=lock.json --lock-write ${DENO_RUN_OPTIONS} src/mod.ts`,
   );
 });
 
 desc("Bundle ");
 task("bundle", [], async function () {
   await sh(
-    "mkdir -p bundle && deno bundle --unstable --import-map=import_map.json src/mod.ts bundle/token-auth-server.bundle.js",
+    `mkdir -p bundle && deno bundle ${DENO_RUN_OPTIONS} src/mod.ts bundle/${DENO_PROJECT_NAME}.bundle.js`,
   );
 });
+
+desc("Docker Image build");
+task("build-image", [], async function () {
+  await sh(`
+    docker image rm ${DENO_PROJECT_NAME}
+    docker image build -f Dockerfile.prod -t ${DENO_PROJECT_NAME} .
+  `);
+});
+
+desc("Docker Image tags");
+task("tag-image", [], async function () {
+  await sh(`
+    if [[ -z "$DOCKER_HUB_USERNAME" ]]; then
+      echo "Docker Hub user name > DOCKER_HUB_USERNAME < must be set."
+    else
+      docker tag ${DENO_PROJECT_NAME} $DOCKER_HUB_USERNAME/${DENO_PROJECT_NAME}:latest
+    fi
+  `);
+});
+
+desc("Publish to docker hub");
+task(
+  "publish",
+  ["cache-reload", "build-image", "tag-image"],
+  async function () {
+    await sh(`
+  if [[ -z "$DOCKER_HUB_USERNAME" ]]; then
+    echo "Docker Hub user name > DOCKER_HUB_USERNAME < must be set."
+  else
+    docker push $DOCKER_HUB_USERNAME/${DENO_PROJECT_NAME}:latest
+  fi
+  `);
+  },
+);
 
 desc("Install denon for development");
 task("denon-install", [], async function () {
@@ -87,4 +125,5 @@ desc("Seed database");
 task("seed", [], async function () {
   await databaseSeed();
 });
+
 run();
