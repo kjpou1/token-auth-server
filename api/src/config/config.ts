@@ -4,6 +4,9 @@ export const config = loadConfig();
 export function loadConfig(
   env = "development",
 ): Record<string, string> {
+  // save off original env variables for later merge
+  const originalEnv = Deno.env.toObject();
+
   // Check if there is an override
   env = Deno.env.get("DENO_ENV") ?? env;
   const safe = env !== "CI"; // Is this being executed from CI
@@ -36,5 +39,19 @@ export function loadConfig(
   }
 
   const envConfig = dotenv.config(configOptions);
+
+  // We will then go back through and override the environment variables
+  // passed in so they will be accessible through our config object
+  for (const key in originalEnv) {
+    if (key in envConfig) {
+      console.log(
+        `overriding config ${key} with value from environment ${
+          originalEnv[key]
+        }`,
+      );
+      envConfig[key] = originalEnv[key];
+    }
+  }
+
   return envConfig;
 }
