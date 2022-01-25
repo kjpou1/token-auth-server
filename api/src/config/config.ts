@@ -44,10 +44,8 @@ export function loadConfig(
   // passed in so they will be accessible through our config object
   for (const key in originalEnv) {
     if (key in envConfig) {
-      console.log(
-        `overriding config ${key} with value from environment ${
-          originalEnv[key]
-        }`,
+      log.debug(
+        `merging config ${key} with value from environment variable of the same name.`,
       );
       envConfig[key] = originalEnv[key];
     }

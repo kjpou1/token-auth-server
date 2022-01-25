@@ -70,24 +70,8 @@ export class MailerService {
       password: config.SMTP_PASSWORD,
     };
 
-    log.debug(
-      "*----------------------------- SMTP connection Start ------------------*",
-    );
-    log.debug(connectConfig);
     await client.connectTLS(connectConfig);
-    log.debug(
-      "*----------------------------- SMTP connection End ------------------*",
-    );
 
-    log.debug(
-      "*----------------------------- EMail content Start ------------------*",
-    );
-    log.debug(infoToSend);
-    log.debug(
-      "*----------------------------- EMail content End ------------------*",
-    );
-
-    console.log(infoToSend);
     await client.send(infoToSend);
 
     await client.close();
