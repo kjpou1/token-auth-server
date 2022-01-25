@@ -66,7 +66,7 @@ task("cache", [], async function () {
 desc("Cache reload and lock dependencies");
 task("cache-reload", [], async function () {
   await sh(
-    `echo ${DENO_RUN_OPTIONS} &&  deno cache --reload --lock=lock.json --lock-write ${DENO_RUN_OPTIONS} src/mod.ts`,
+    `deno cache --reload --lock=lock.json --lock-write ${DENO_RUN_OPTIONS} src/mod.ts`,
   );
 });
 
