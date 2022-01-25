@@ -29,8 +29,6 @@ function ensureSecretKeyFileExists() {
 
 export function ensureEnvironment() {
   ensureSecretKeyFileExists();
-  console.log(config);
-  console.log(Deno.env.toObject());
 }
 
 export function createResponseUser(user: UserSchema): ResponseUser | undefined {

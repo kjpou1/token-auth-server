@@ -70,7 +70,7 @@ export const Register: [
       const content = await MailerService.sendRegistered(
         userData,
       );
-      console.log(content);
+      //console.log(content);
       response.body = {
         code: "success",
         status: 200,
