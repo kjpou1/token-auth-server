@@ -72,9 +72,11 @@ export async function databaseSeed() {
       }
       const roles: UserRole[] = [UserRole.SUPER, UserRole.ADMIN];
       const adminUser = {
-        name: SEED_NAME,
-        email: SEED_EMAIL,
-        password: await bcrypt.hash(SEED_PASSWORD),
+        name: SEED_NAME ?? Deno.env.get("SEED_NAME"),
+        email: SEED_EMAIL ?? Deno.env.get("SEED_EMAIL"),
+        password: await bcrypt.hash(
+          SEED_PASSWORD ?? Deno.env.get("SEED_PASSWORD"),
+        ),
         emailVerified: true,
         active: true,
         createdOn: new Date(),
