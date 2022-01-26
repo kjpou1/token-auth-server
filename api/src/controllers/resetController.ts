@@ -36,10 +36,13 @@ export const RequestReset: [
       requestResetData,
     );
 
-    const content = await MailerService.sendResetRequest(
-      resetInformation,
-      requestResetData,
-    );
+    let content = "";
+    if (requestResetData.sendEmail) {
+      content = await MailerService.sendResetRequest(
+        resetInformation,
+        requestResetData,
+      );
+    }
 
     response.body = {
       code: "success",

@@ -4,4 +4,6 @@ export type ResetRequest = {
   email: string;
   /** reset URL */
   resetURL: string;
+  /** send request e-mail */
+  sendEmail: boolean;
 };
