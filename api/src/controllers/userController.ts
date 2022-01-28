@@ -4,9 +4,9 @@ import {
   requestValidator,
 } from "../middlewares/middlewares.ts";
 import { UserSchema } from "../schemas/schemas.ts";
-import { UserService } from "../services/services.ts";
+import { EncryptionService, UserService } from "../services/services.ts";
 import { Pagination } from "../types/filterandpagination/FilterAndPaginationTypes.ts";
-import { UserRole } from "../types/user/userTypes.ts";
+import { PasswordChange, UserRole } from "../types/user/userTypes.ts";
 import {
   Bson,
   helpers,
@@ -16,7 +16,10 @@ import {
 } from "../utils/deps.ts";
 import { createResponseUser } from "../utils/utils.ts";
 import { paginationValidationSchema } from "../validators/request-parameter-validations.ts";
-import { updateUserValidationSchema } from "../validators/request-validations.ts";
+import {
+  changePasswordValidationSchema,
+  updateUserValidationSchema,
+} from "../validators/request-validations.ts";
 
 /**
  * Get Users
@@ -152,5 +155,62 @@ export const DeleteUserById: [
     } else {
       throw new httpErrors.NotFound("User not found");
     }
+  },
+];
+
+export const ChangePassword: [
+  RouterMiddleware<"">,
+  RouterMiddleware<"me/change_password">,
+] = [
+  /** request validation middleware */
+  requestValidator({ bodyRules: changePasswordValidationSchema }),
+  /** router handler */
+  async (
+    ctx: RouterContext<"me/change_password">,
+  ) => {
+    const { response, request, state } = ctx;
+
+    if (!state?.user) {
+      throw new httpErrors.Forbidden();
+    }
+    const newPasswordInfo = await request.body().value as PasswordChange;
+
+    const currentUser = await UserService.getUserById(state.user._id);
+    if (!currentUser) {
+      throw new httpErrors.Forbidden();
+    }
+    if (
+      !await EncryptionService.compare(
+        newPasswordInfo.passwordCurrent,
+        currentUser.password,
+      )
+    ) {
+      throw new httpErrors.Unauthorized(JSON.stringify({
+        field: "passwordCurrent",
+        errorMessage: "Current password does not match.",
+      }));
+    }
+    if (newPasswordInfo.passwordNew !== newPasswordInfo.passwordConfirm) {
+      throw new httpErrors.BadRequest(JSON.stringify({
+        field: ["passwordNew", "passwordConfirm"],
+        errorMessage: "Passwords do not match.",
+      }));
+    }
+
+    const passwordUpdated = await UserService.updateUserPasswordByEmail(
+      currentUser.email,
+      newPasswordInfo.passwordNew,
+    );
+    if (!passwordUpdated) {
+      throw new httpErrors.InternalServerError(
+        "Request not fulfilled.  Please try again.",
+      );
+    }
+
+    response.body = {
+      status: 200,
+      message: "Success",
+    };
+    return;
   },
 ];
