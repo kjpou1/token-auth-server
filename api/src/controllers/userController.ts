@@ -160,8 +160,11 @@ export const DeleteUserById: [
 
 export const ChangePassword: [
   RouterMiddleware<"">,
+  RouterMiddleware<"">,
   RouterMiddleware<"me/change_password">,
 ] = [
+  /** authorization and user role access policy middleware */
+  authorize(),
   /** request validation middleware */
   requestValidator({ bodyRules: changePasswordValidationSchema }),
   /** router handler */
