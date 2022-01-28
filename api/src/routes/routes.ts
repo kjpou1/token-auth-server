@@ -28,7 +28,8 @@ router.get(
 )
   .get("users/:id", ...userRoutes.GetUserById)
   .patch("users/:id", ...userRoutes.UpdateUserById)
-  .delete("users/:id", ...userRoutes.DeleteUserById);
+  .delete("users/:id", ...userRoutes.DeleteUserById)
+  .patch("me/change_password", ...userRoutes.ChangePassword);
 
 router.post("request_reset", ...resetRoutes.RequestReset)
   .post("reset/:requestId", ...resetRoutes.Reset);
